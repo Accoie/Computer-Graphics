@@ -17,7 +17,6 @@ namespace Task2
         {
             InitializeComponent();
 
-            // Инициализируем трансформацию для плавного перемещения
             _transform = new TranslateTransform();
             sceneContainer.RenderTransform = _transform;
         }
@@ -27,7 +26,7 @@ namespace Task2
             _isDragging = true;
             _lastMousePosition = e.GetPosition( this );
             sceneContainer.CaptureMouse();
-            Cursor = Cursors.SizeAll; // Меняем курсор на "перемещение"
+            Cursor = Cursors.SizeAll;
         }
 
         private void SceneContainer_MouseMove( object sender, MouseEventArgs e )
@@ -38,7 +37,6 @@ namespace Task2
                 double deltaX = currentMousePosition.X - _lastMousePosition.X;
                 double deltaY = currentMousePosition.Y - _lastMousePosition.Y;
 
-                // Применяем перемещение
                 _transform.X += deltaX;
                 _transform.Y += deltaY;
 
@@ -50,7 +48,7 @@ namespace Task2
         {
             _isDragging = false;
             sceneContainer.ReleaseMouseCapture();
-            Cursor = Cursors.Arrow; // Возвращаем стандартный курсор
+            Cursor = Cursors.Arrow;
         }
     }
 }

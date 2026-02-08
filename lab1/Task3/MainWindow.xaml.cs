@@ -104,7 +104,9 @@ namespace Task3
         private void FillCircle( int cx, int cy, double radius )
         {
             if ( radius <= 0 )
+            {
                 return;
+            }
 
             int minY = Math.Max( 0, cy - ( int )Math.Ceiling( radius ) );
             int maxY = Math.Min( bitmapHeight - 1, cy + ( int )Math.Ceiling( radius ) );
@@ -130,7 +132,9 @@ namespace Task3
         private void DrawCircleBorder( int cx, int cy, double radius )
         {
             if ( borderThickness <= 0 )
+            {
                 return;
+            }
 
             for ( int t = 0; t < borderThickness; t++ )
             {
@@ -173,7 +177,9 @@ namespace Task3
         private void SetPixel( int x, int y, Color color )
         {
             if ( x < 0 || x >= bitmapWidth || y < 0 || y >= bitmapHeight )
+            {
                 return;
+            }
 
             int index = ( y * bitmapWidth + x ) * 4;
 
@@ -186,7 +192,9 @@ namespace Task3
         private void SetBorderPixel( int x, int y )
         {
             if ( x < 0 || x >= bitmapWidth || y < 0 || y >= bitmapHeight )
+            {
                 return;
+            }
 
             int index = ( y * bitmapWidth + x ) * 4;
 
