@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Task1
 {
@@ -21,7 +22,7 @@ namespace Task1
         private async Task StartWaveAnimation()
         {
             _ = AnimateCanvasContinuously( CanvasM );
-            await Task.Delay( 400 );
+            await Task.Delay( 700 );
 
             _ = AnimateCanvasContinuously( CanvasP );
             await Task.Delay( 400 );
@@ -31,42 +32,39 @@ namespace Task1
 
         private async Task AnimateCanvasContinuously( Canvas canvas )
         {
-            double initialTop = canvas.Margin.Top;
-            double moveDistance = 50;
-            double duration = 2000;
+            var translateTransform = new TranslateTransform();
+            canvas.RenderTransform = translateTransform;
+            // исправить делеи
+            double moveDistance = 50; 
+            double duration = 800;     
+            int frameDelay = 16;       
 
-            while ( true )
+            while ( IsLoaded )
             {
-                double steps = duration / 16;
-                double stepDistance = moveDistance / ( steps / 2 );
-
-                for ( int i = 0; i < steps / 2; i++ )
+                double offset = moveDistance * frameDelay / duration;
+                for ( double y = 0; y >= -moveDistance; y -= offset )
                 {
                     if ( !IsLoaded )
+                    {
+                        translateTransform.Y = 0;
                         return;
+                    }
 
-                    canvas.Margin = new Thickness(
-                        canvas.Margin.Left,
-                        canvas.Margin.Top - stepDistance,
-                        canvas.Margin.Right,
-                        canvas.Margin.Bottom );
-                    await Task.Delay( 16 );
+                    translateTransform.Y = y;
+                    await Task.Delay( frameDelay );
                 }
 
-                for ( int i = 0; i < steps / 2; i++ )
+                for ( double y = -moveDistance; y <= 0; y += offset)
                 {
                     if ( !IsLoaded )
+                    {
+                        translateTransform.Y = 0;
                         return;
+                    }
 
-                    canvas.Margin = new Thickness(
-                        canvas.Margin.Left,
-                        canvas.Margin.Top + stepDistance,
-                        canvas.Margin.Right,
-                        canvas.Margin.Bottom );
-                    await Task.Delay( 16 );
+                    translateTransform.Y = y;
+                    await Task.Delay( frameDelay );
                 }
-
-                canvas.Margin = new Thickness( canvas.Margin.Left, initialTop, canvas.Margin.Right, canvas.Margin.Bottom );
             }
         }
     }

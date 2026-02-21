@@ -87,12 +87,10 @@ namespace Task3
                 pixelData[ i + 3 ] = 255;
             }
 
-            int cx = ( int )Math.Round( circleCenter.X );
-            int cy = ( int )Math.Round( circleCenter.Y );
+            int xc = ( int )Math.Round( circleCenter.X );
+            int yc = ( int )Math.Round( circleCenter.Y );
 
-            FillCircle( cx, cy, circleRadius - borderThickness );
-
-            DrawCircleBorder( cx, cy, circleRadius );
+            DrawCircle( xc, yc, ( int )circleRadius, borderThickness );
 
             bitmap.WritePixels(
                 new Int32Rect( 0, 0, bitmapWidth, bitmapHeight ),
@@ -101,80 +99,80 @@ namespace Task3
                 0 );
         }
 
-        private void FillCircle( int cx, int cy, double radius )
+        private void DrawCircle( int xc, int yc, int r, int thickness )
         {
-            if ( radius <= 0 )
+            int x0 = xc - r - 2;
+            int x1 = xc + r + 2;
+            int y0 = yc - r - 2;
+            int y1 = yc + r + 2;
+
+            x0 = Math.Max( 0, x0 );
+            x1 = Math.Min( bitmapWidth - 1, x1 );
+            y0 = Math.Max( 0, y0 );
+            y1 = Math.Min( bitmapHeight - 1, y1 );
+
+            double outerRadius = r;
+            double innerRadius = r - thickness;
+            // выяснить как то упростить(или декомпозировать)
+            for ( int y = y0; y <= y1; y++ )
             {
-                return;
-            }
-
-            int minY = Math.Max( 0, cy - ( int )Math.Ceiling( radius ) );
-            int maxY = Math.Min( bitmapHeight - 1, cy + ( int )Math.Ceiling( radius ) );
-
-            for ( int y = minY; y <= maxY; y++ )
-            {
-                double dy = y - cy;
-                double dx = Math.Sqrt( Math.Max( 0, radius * radius - dy * dy ) );
-
-                int startX = ( int )Math.Ceiling( cx - dx );
-                int endX = ( int )Math.Floor( cx + dx );
-
-                startX = Math.Max( 0, startX );
-                endX = Math.Min( bitmapWidth - 1, endX );
-
-                for ( int x = startX; x <= endX; x++ )
+                for ( int x = x0; x <= x1; x++ )
                 {
-                    SetPixel( x, y, fillColor );
+                    double dx = x - xc;
+                    double dy = y - yc;
+                    double distance = Math.Sqrt( dx * dx + dy * dy );
+
+                    if ( thickness > 0 )
+                    {
+                        double alpha = 0.0;
+
+                        if ( thickness <= 2 )
+                        {
+                            if ( distance > outerRadius && distance < outerRadius + 1.0 )
+                            {
+                                alpha = 1.0 - ( distance - outerRadius );
+                            }
+                            else if ( distance < innerRadius && distance > innerRadius - 1.0 )
+                            {
+                                alpha = 1.0 - ( innerRadius - distance );
+                            }
+                            else if ( distance >= innerRadius && distance <= outerRadius )
+                            {
+                                alpha = 1.0;
+                            }
+                        }
+                        else
+                        {
+                            double centerRadius = ( outerRadius + innerRadius ) / 2.0;
+                            double halfThickness = thickness / 2.0;
+                            double distFromCenter = Math.Abs( distance - centerRadius );
+
+                            if ( distFromCenter <= halfThickness )
+                            {
+                                alpha = 1.0;
+                            }
+                            else if ( distFromCenter <= halfThickness + 1.0 )
+                            {
+                                alpha = 1.0 - ( distFromCenter - halfThickness );
+                            }
+                        }
+
+                        if ( alpha > 0.0 )
+                        {
+                            BlendPixel( x, y, borderColor, alpha );
+                            continue;
+                        }
+                    }
+
+                    if ( distance <= innerRadius )
+                    {
+                        SetPixelSolid( x, y, fillColor );
+                    }
                 }
             }
         }
 
-        private void DrawCircleBorder( int cx, int cy, double radius )
-        {
-            if ( borderThickness <= 0 )
-            {
-                return;
-            }
-
-            for ( int t = 0; t < borderThickness; t++ )
-            {
-                double currentRadius = radius - t;
-                DrawCircleOutline( cx, cy, currentRadius );
-            }
-        }
-
-        private void DrawCircleOutline( int cx, int cy, double radius )
-        {
-            int x = 0;
-            int y = ( int )Math.Round( radius );
-            int d = 3 - 2 * ( int )Math.Round( radius );
-
-            while ( y >= x )
-            {
-                SetBorderPixel( cx + x, cy + y );
-                SetBorderPixel( cx - x, cy + y );
-                SetBorderPixel( cx + x, cy - y );
-                SetBorderPixel( cx - x, cy - y );
-                SetBorderPixel( cx + y, cy + x );
-                SetBorderPixel( cx - y, cy + x );
-                SetBorderPixel( cx + y, cy - x );
-                SetBorderPixel( cx - y, cy - x );
-
-                x++;
-
-                if ( d > 0 )
-                {
-                    y--;
-                    d = d + 4 * ( x - y ) + 10;
-                }
-                else
-                {
-                    d = d + 4 * x + 6;
-                }
-            }
-        }
-
-        private void SetPixel( int x, int y, Color color )
+        private void SetPixelSolid( int x, int y, Color color )
         {
             if ( x < 0 || x >= bitmapWidth || y < 0 || y >= bitmapHeight )
             {
@@ -182,14 +180,13 @@ namespace Task3
             }
 
             int index = ( y * bitmapWidth + x ) * 4;
-
             pixelData[ index ] = color.B;
             pixelData[ index + 1 ] = color.G;
             pixelData[ index + 2 ] = color.R;
             pixelData[ index + 3 ] = 255;
         }
 
-        private void SetBorderPixel( int x, int y )
+        private void BlendPixel( int x, int y, Color color, double alpha )
         {
             if ( x < 0 || x >= bitmapWidth || y < 0 || y >= bitmapHeight )
             {
@@ -198,9 +195,17 @@ namespace Task3
 
             int index = ( y * bitmapWidth + x ) * 4;
 
-            pixelData[ index ] = borderColor.B;
-            pixelData[ index + 1 ] = borderColor.G;
-            pixelData[ index + 2 ] = borderColor.R;
+            byte dstB = pixelData[ index ];
+            byte dstG = pixelData[ index + 1 ];
+            byte dstR = pixelData[ index + 2 ];
+
+            byte srcB = color.B;
+            byte srcG = color.G;
+            byte srcR = color.R;
+
+            pixelData[ index ] = ( byte )( srcB * alpha + dstB * ( 1.0 - alpha ) );
+            pixelData[ index + 1 ] = ( byte )( srcG * alpha + dstG * ( 1.0 - alpha ) );
+            pixelData[ index + 2 ] = ( byte )( srcR * alpha + dstR * ( 1.0 - alpha ) );
             pixelData[ index + 3 ] = 255;
         }
     }

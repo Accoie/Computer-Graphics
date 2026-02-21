@@ -1,0 +1,37 @@
+﻿<Window x:Class="Task2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Image Painter" Height="700" Width="1000" MinWidth="400" MinHeight="300"
+        MouseLeftButtonUp="Window_MouseLeftButtonUp">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="_Файл">
+                <MenuItem Header="_Новый" Click="MenuItem_New_Click" InputGestureText="Ctrl+N"/>
+                <MenuItem Header="_Открыть" Click="MenuItem_Open_Click" InputGestureText="Ctrl+O"/>
+                <MenuItem Header="_Сохранить как..." Click="MenuItem_SaveAs_Click" InputGestureText="Ctrl+S"/>
+                <Separator/>
+                <MenuItem Header="_Выход" Click="MenuItem_Exit_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Инструменты">
+                <MenuItem Header="Выбрать _цвет..." Click="MenuItem_SelectColor_Click"/>
+                <MenuItem Header="_Очистить рисунок" Click="MenuItem_ClearDrawing_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Background="White">
+            <Viewbox Stretch="Uniform">
+                <Grid x:Name="DrawingGrid" Background="White">
+                    <Image x:Name="ImageView" Stretch="Uniform"/>
+                    <Canvas x:Name="DrawingCanvas" Background="Transparent"
+                            MouseLeftButtonDown="DrawingCanvas_MouseLeftButtonDown"
+                            MouseMove="DrawingCanvas_MouseMove"/>
+                </Grid>
+            </Viewbox>
+        </Border>
+    </Grid>
+</Window>

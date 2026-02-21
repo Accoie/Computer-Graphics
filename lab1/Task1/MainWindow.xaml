@@ -7,36 +7,44 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800" HorizontalAlignment="Center" VerticalAlignment="Center" ResizeMode="NoResize">
     <Grid>
-        <Grid MouseUp="Grid_MouseUp">
-            <Canvas x:Name="CanvasM" Margin="150,140,0,0" Width="70" Height="60">
+        <!-- Основной контейнер для центрирования -->
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <!-- Буква M -->
+            <Canvas x:Name="CanvasM" Width="70" Height="60" Margin="10,0">
                 <Path Data="M 5,55 L 18,15 L 35,40 L 52,15 L 65,55" 
-                      Stroke="Red" StrokeThickness="8" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" Fill="Transparent" HorizontalAlignment="Left" Stretch="Fill" VerticalAlignment="Top" Width="48" Canvas.Left="22" Canvas.Top="12"/>
+                      Stroke="Red" StrokeThickness="8" StrokeLineJoin="Round" 
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
+                      Fill="Transparent" HorizontalAlignment="Center" Canvas.Left="16.998" VerticalAlignment="Top" Canvas.Top="10" Stretch="Fill" Width="63" Height="50"/>
             </Canvas>
-        </Grid>
 
-        <Grid MouseUp="Grid_MouseUp">
-            <Canvas x:Name="CanvasP" Margin="300,140,0,0" Width="50" Height="60">
-                <Line X1="10" Y1="10" X2="10" Y2="55" Stroke="Green" StrokeThickness="8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" Canvas.Top="5" VerticalAlignment="Top" Height="55"/>
+            <!-- Буква P -->
+            <Canvas x:Name="CanvasP" Width="50" Height="60" Margin="10,0">
+                <Line X1="10" Y1="10" X2="10" Y2="55" 
+                      Stroke="Green" StrokeThickness="8" 
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" Canvas.Left="10" Canvas.Top="1"/>
                 <Path Data="M 10,20 A 15,15 0 0 1 25,32 A 15,15 0 0 1 10,44" 
-                      Stroke="Green" StrokeThickness="8" StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round" Fill="Transparent" HorizontalAlignment="Left" Canvas.Top="10" VerticalAlignment="Top" Stretch="Fill" Width="28" Height="38" Canvas.Left="7"/>
+                      Stroke="Green" StrokeThickness="8" 
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" 
+                      StrokeLineJoin="Round" Fill="Transparent" HorizontalAlignment="Center" Canvas.Top="6.6" VerticalAlignment="Top" Stretch="Fill" Width="30" Canvas.Left="15.5" Height="36"/>
             </Canvas>
-        </Grid>
 
-        <Grid MouseUp="Grid_MouseUp" Margin="-29,11,29,-11">
-            <Canvas x:Name="CanvasSh" Margin="450,140,0,0" Width="60" Height="60" RenderTransformOrigin="0.5,0.5">
-                <Canvas.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="179.112"/>
-                        <TranslateTransform/>
-                    </TransformGroup>
-                </Canvas.RenderTransform>
-                <Line X1="10" Y1="15" X2="10" Y2="55" Stroke="Blue" StrokeThickness="8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-                <Line X1="30" Y1="15" X2="30" Y2="55" Stroke="Blue" StrokeThickness="8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-                <Line X1="50" Y1="15" X2="50" Y2="55" Stroke="Blue" StrokeThickness="8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-                <Line X1="10" Y1="15" X2="50" Y2="15" Stroke="Blue" StrokeThickness="8" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+            <!-- Буква Sh -->
+            <Canvas x:Name="CanvasSh" Width="60" Height="60" Margin="10,0">
+                <Line X1="10" Y1="15" X2="10" Y2="55" 
+                      Stroke="Blue" StrokeThickness="8" 
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                <Line X1="30" Y1="15" X2="30" Y2="55" 
+                      Stroke="Blue" StrokeThickness="8" 
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                <Line X1="50" Y1="15" X2="50" Y2="55" 
+                      Stroke="Blue" StrokeThickness="8" 
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                <Line X1="10" Y1="15" X2="50" Y2="15" 
+                      Stroke="Blue" StrokeThickness="8" 
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" Canvas.Top="41" VerticalAlignment="Top"/>
             </Canvas>
-        </Grid>
+
+        </StackPanel>
     </Grid>
 </Window>

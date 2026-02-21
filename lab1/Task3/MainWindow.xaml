@@ -12,7 +12,7 @@
         <Border Grid.Row="0" Background="#f0f0f0" Padding="10" BorderBrush="#ccc" BorderThickness="0,0,0,1">
             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                 <TextBlock Text="Толщина обводки:" Margin="0,0,10,0" FontWeight="Bold"/>
-                <Slider x:Name="thicknessSlider" Minimum="1" Maximum="10" Width="200" 
+                <Slider x:Name="thicknessSlider" Minimum="0" Maximum="10" Width="200" 
                         TickFrequency="1" IsSnapToTickEnabled="True" Margin="0,0,10,0"/>
                 <TextBlock x:Name="thicknessValueText" Width="30" TextAlignment="Center" FontWeight="Bold"/>
                 <TextBlock Text="пикс."/>
