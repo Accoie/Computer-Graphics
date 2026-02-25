@@ -6,7 +6,7 @@ namespace Task2;
 
 class Program
 {
-    static void Main( string[] args )
+    static void Main()
     {
 
         var nativeWinSettings = new NativeWindowSettings()
@@ -23,7 +23,7 @@ class Program
             NumberOfSamples = 0
         };
 
-        using ( Game game = new Game( GameWindowSettings.Default, nativeWinSettings ) )
+        using ( AquariumWindow game = new AquariumWindow( GameWindowSettings.Default, nativeWinSettings ) )
         {
             game.Run();
         }

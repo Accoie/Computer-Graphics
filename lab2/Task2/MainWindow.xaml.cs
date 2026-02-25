@@ -11,6 +11,8 @@ namespace Task2
 {
     public partial class MainWindow : Window
     {
+        // сделать чтобы отслеживало курсор за пределами холста
+        // разобраться почему картинка уменьшается при ресайзе окна(почему координаты мыши старнно изменяются при ресайзе)
         private const int CanvasWidth = 1100;
         private const int CanvasHeight = 700;
         private const double MinOffset = 1.0;
@@ -43,7 +45,6 @@ namespace Task2
         {
             InitializeComponent();
 
-            // Используем универсальную функцию для создания фильтров
             ImageFilesFilter = CreateFileFilter( imageOpenFormats, includeAllFilesFilter: true );
             SaveFilesFilter = CreateFileFilter( imageSaveFormats, includeAllFilesFilter: false );
 
@@ -152,7 +153,7 @@ namespace Task2
             }
 
             Point currentPoint = e.GetPosition( DrawingCanvas );
-
+            Console.WriteLine( currentPoint.X.ToString(), currentPoint.Y.ToString() );
             bool outOfBounds = currentPoint.X < 0 || currentPoint.Y < 0 ||
                 currentPoint.X > DrawingCanvas.ActualWidth ||
                 currentPoint.Y > DrawingCanvas.ActualHeight;
@@ -232,23 +233,6 @@ namespace Task2
             return bitmap;
         }
 
-        private string ShowOpenFileDialog()
-        {
-            var dialog = new OpenFileDialog { Filter = ImageFilesFilter };
-            return dialog.ShowDialog() == true ? dialog.FileName : null;
-        }
-
-        private void ShowErrorMessage( string message )
-        {
-            MessageBox.Show( message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error );
-        }
-
-        private void ShowSuccessMessage()
-        {
-            MessageBox.Show( "Изображение сохранено", "Успех!",
-                MessageBoxButton.OK, MessageBoxImage.Information );
-        }
-
         private void PrepareDrawingGridForRender()
         {
             DrawingGrid.Measure( new Size( double.PositiveInfinity, double.PositiveInfinity ) );
@@ -263,10 +247,11 @@ namespace Task2
                 ( int )DrawingGrid.ActualHeight,
                 DpiX, DpiY, PixelFormats.Pbgra32 );
             renderBitmap.Render( DrawingGrid );
+
             return renderBitmap;
         }
 
-        private void SaveBitmapToFile( RenderTargetBitmap bitmap, string filePath )
+        private void SaveBitmapToFile( BitmapSource bitmap, string filePath )
         {
             using ( var stream = new FileStream( filePath, FileMode.Create ) )
             {
@@ -292,6 +277,23 @@ namespace Task2
                 default:
                     return new PngBitmapEncoder();
             }
+        }
+
+        private string ShowOpenFileDialog()
+        {
+            var dialog = new OpenFileDialog { Filter = ImageFilesFilter };
+            return dialog.ShowDialog() == true ? dialog.FileName : null;
+        }
+
+        private void ShowErrorMessage( string message )
+        {
+            MessageBox.Show( message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error );
+        }
+
+        private void ShowSuccessMessage()
+        {
+            MessageBox.Show( "Изображение сохранено", "Успех!",
+                MessageBoxButton.OK, MessageBoxImage.Information );
         }
     }
 }
