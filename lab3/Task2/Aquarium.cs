@@ -1,8 +1,11 @@
-﻿using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using Task2.Components;
+using Task2.Strategies;
+using Task2.Strategies.FishRenderStrategies;
+using Task2.Strategies.StoneRenderStrategies;
 
 namespace Task2;
 
@@ -27,6 +30,9 @@ public class AquariumWindow : GameWindow
     private readonly List<Bubble> _bubbles = [];
     private readonly Random _random = new Random();
 
+    private readonly List<Fish> _fishes = [];
+    private readonly List<Stone> _stones = [];
+
     public AquariumWindow( GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings )
         : base( gameWindowSettings, nativeWindowSettings ) { }
 
@@ -36,6 +42,32 @@ public class AquariumWindow : GameWindow
         GL.ClearColor( 0.6f, 0.77f, 0.57f, 1.00f );
         GL.Enable( EnableCap.Blend );
         GL.BlendFunc( BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha );
+
+        InitializeFishes();
+        InitializeStones();
+    }
+
+    private void InitializeFishes()
+    {
+        _fishes.Add(new Fish(FishBasePositions[0], new Vector2(120.0f, 80.0f), _fishOffsets[0], new Fish1RenderStrategy()));
+        _fishes.Add(new Fish(FishBasePositions[1], new Vector2(150.0f, 40.0f), _fishOffsets[1], new Fish2RenderStrategy()));
+        _fishes.Add(new Fish(FishBasePositions[2], new Vector2(100.0f, 60.0f), _fishOffsets[2], new Fish3RenderStrategy()));
+        _fishes.Add(new Fish(FishBasePositions[3], new Vector2(120.0f, 80.0f), _fishOffsets[3], new Fish4RenderStrategy()));
+        _fishes.Add(new Fish(FishBasePositions[4], new Vector2(100.0f, 60.0f), _fishOffsets[4], new Fish5RenderStrategy()));
+    }
+
+    private void InitializeStones()
+    {
+        _stones.Add(new Stone(new Vector2(370.0f, -600.0f), new Vector2(100.0f, 100.0f), new Stone2RenderStrategy()));
+        _stones.Add(new Stone(new Vector2(-240.0f, -600.0f), new Vector2(50.0f, 50.0f), new Stone4RenderStrategy()));
+        _stones.Add(new Stone(new Vector2(100.0f, -600.0f), new Vector2(60.0f, 30.0f), new Stone2RenderStrategy()));
+        _stones.Add(new Stone(new Vector2(600.0f, -600.0f), new Vector2(40.0f, 20.0f), new Stone2RenderStrategy()));
+        _stones.Add(new Stone(new Vector2(60.0f, -600.0f), new Vector2(60.0f, 40.0f), new Stone1RenderStrategy()));
+        _stones.Add(new Stone(new Vector2(-550.0f, -600.0f), new Vector2(50.0f, 50.0f), new Stone3RenderStrategy()));
+        _stones.Add(new Stone(new Vector2(200.0f, -600.0f), new Vector2(40.0f, 40.0f), new Stone4RenderStrategy()));
+        _stones.Add(new Stone(new Vector2(500.0f, -600.0f), new Vector2(70.0f, 50.0f), new Stone1RenderStrategy()));
+        _stones.Add(new Stone(new Vector2(440.0f, -600.0f), new Vector2(40.0f, 40.0f), new Stone5RenderStrategy()));
+        _stones.Add(new Stone(new Vector2(630.0f, -600.0f), new Vector2(40.0f, 40.0f), new Stone5RenderStrategy()));
     }
 
     protected override void OnResize( ResizeEventArgs e )
@@ -129,6 +161,8 @@ public class AquariumWindow : GameWindow
             {
                 _fishOffsets[ i ] = FishBasePositions[ i ].X - rightResetPos;
             }
+
+            _fishes[i].Offset = _fishOffsets[i];
         }
     }
 
@@ -218,25 +252,18 @@ public class AquariumWindow : GameWindow
 
     void DrawStones()
     {
-        DrawStone2( 370.0f, -600.0f, 100.0f, 100.0f );
-        DrawStone4( -240.0f, -600.0f, 50.0f, 50.0f );
-        DrawStone2( 100.0f, -600.0f, 60.0f, 30.0f );
-        DrawStone2( 600.0f, -600.0f, 40.0f, 20.0f );
-        DrawStone1( 60.0f, -600.0f, 60.0f, 40.0f );
-        DrawStone3( -550.0f, -600.0f, 50.0f, 50.0f );
-        DrawStone4( 200.0f, -600.0f, 40.0f, 40.0f );
-        DrawStone1( 500.0f, -600.0f, 70.0f, 50.0f );
-        DrawStone5( 440.0f, -600.0f, 40.0f, 40.0f );
-        DrawStone5( 630.0f, -600.0f, 40.0f, 40.0f );
+        foreach (var stone in _stones)
+        {
+            stone.Draw();
+        }
     }
 
     void DrawFish()
     {
-        DrawFish1( FishBasePositions[ 0 ].X, FishBasePositions[ 0 ].Y, 120.0f, 80.0f );
-        DrawFish2( FishBasePositions[ 1 ].X, FishBasePositions[ 1 ].Y, 150.0f, 40.0f );
-        DrawFish3( FishBasePositions[ 2 ].X, FishBasePositions[ 2 ].Y, 100.0f, 60.0f );
-        DrawFish4( FishBasePositions[ 3 ].X, FishBasePositions[ 3 ].Y, 120.0f, 80.0f );
-        DrawFish5( FishBasePositions[ 4 ].X, FishBasePositions[ 4 ].Y, 100.0f, 60.0f );
+        foreach (var fish in _fishes)
+        {
+            fish.Draw();
+        }
     }
 
     void DrawPlant( float x, float y, float width, float height )
@@ -251,311 +278,6 @@ public class AquariumWindow : GameWindow
             GL.Vertex2( x + i + offset, y );
             GL.Vertex2( x + i + offset, y + height * ( float )Math.Sin( ( i + offset / 2 ) * Math.PI / width * 3.2 ) );
             GL.Vertex2( x + i, y + height * ( float )Math.Sin( ( i + offset / 2 ) * Math.PI / width * 3 ) );
-        }
-        GL.End();
-    }
-
-    void DrawFish1( float x, float y, float rx, float ry )
-    {
-        GL.PushMatrix();
-        GL.Translate( -_fishOffsets[ 0 ], 0.0f, 0.0f );
-
-        GL.Begin( PrimitiveType.TriangleFan );
-        GL.Color3( 1.0f, 0.9f, 0.2f );
-        GL.Vertex2( x, y );
-        GL.Color3( 1.0f, 0.7f, 0.0f );
-        for ( int i = 0; i <= 360; i += 30 )
-        {
-            float angle = i * ( float )Math.PI / 180;
-            GL.Vertex2( x + rx * ( float )Math.Cos( angle ), y + ry * ( float )Math.Sin( angle ) );
-        }
-        GL.End();
-
-        GL.Begin( PrimitiveType.TriangleFan );
-        GL.Color3( 1.0f, 0.7f, 0.0f );
-        GL.Vertex2( x + rx, y );
-        GL.Vertex2( x + rx + 70, y + 40 );
-        GL.Vertex2( x + rx + 90, y + 20 );
-        GL.Vertex2( x + rx + 90, y - 20 );
-        GL.Vertex2( x + rx + 70, y - 40 );
-        GL.Vertex2( x + rx, y );
-        GL.End();
-
-        DrawEllipse( x - 45, y + 25, 12, 14, Color4.White );
-        DrawEllipse( x - 45, y + 25, 8, 10, new Color4( 0.3f, 0.6f, 1.0f, 1.0f ) );
-        DrawEllipse( x - 45, y + 25, 5, 7, Color4.Black );
-
-        GL.Begin( PrimitiveType.Points );
-        GL.PointSize( 3.0f );
-        GL.Color3( 1.0f, 1.0f, 1.0f );
-        GL.Vertex2( x - 42, y + 29 );
-        GL.End();
-
-        GL.PopMatrix();
-    }
-
-    void DrawFish2( float x, float y, float rx, float ry )
-    {
-        GL.PushMatrix();
-        GL.Translate( -_fishOffsets[ 1 ], 0.0f, 0.0f );
-
-        GL.Begin( PrimitiveType.TriangleFan );
-        GL.Color3( 1.0f, 0.3f, 0.3f );
-        GL.Vertex2( x, y );
-        GL.Color3( 0.9f, 0.1f, 0.1f );
-        for ( int i = 0; i <= 360; i += 30 )
-        {
-            float angle = i * ( float )Math.PI / 180;
-            GL.Vertex2( x + rx * ( float )Math.Cos( angle ), y + ry * ( float )Math.Sin( angle ) );
-        }
-        GL.End();
-
-        GL.Begin( PrimitiveType.Triangles );
-        GL.Color3( 0.9f, 0.0f, 0.0f );
-        GL.Vertex2( x + rx, y );
-        GL.Vertex2( x + rx + 60, y + 50 );
-        GL.Vertex2( x + rx + 40, y );
-
-        GL.Vertex2( x + rx, y );
-        GL.Vertex2( x + rx + 60, y - 50 );
-        GL.Vertex2( x + rx + 40, y );
-        GL.End();
-
-        DrawEllipse( x - 35, y + 12, 6, 8, Color4.White );
-        DrawEllipse( x - 33, y + 14, 3, 4, Color4.Black );
-
-        GL.Begin( PrimitiveType.Points );
-        GL.PointSize( 2.0f );
-        GL.Color3( 1.0f, 1.0f, 1.0f );
-        GL.Vertex2( x - 31, y + 16 );
-        GL.End();
-
-        GL.PopMatrix();
-    }
-
-    void DrawFish3( float x, float y, float rx, float ry )
-    {
-        GL.PushMatrix();
-        GL.Translate( -_fishOffsets[ 2 ], 0.0f, 0.0f );
-
-        GL.Begin( PrimitiveType.TriangleFan );
-        GL.Color3( 0.3f, 0.5f, 1.0f );
-        GL.Vertex2( x, y );
-        GL.Color3( 0.1f, 0.3f, 0.9f );
-        for ( int i = 0; i <= 360; i += 30 )
-        {
-            float angle = i * ( float )Math.PI / 180;
-            GL.Vertex2( x + rx * ( float )Math.Cos( angle ), y + ry * ( float )Math.Sin( angle ) );
-        }
-        GL.End();
-
-        GL.Begin( PrimitiveType.Triangles );
-        GL.Color3( 0.2f, 0.4f, 0.9f );
-        GL.Vertex2( x - 30, y + 55 );
-        GL.Vertex2( x, y + 90 );
-        GL.Vertex2( x + 30, y + 58 );
-
-        GL.Vertex2( x - 30, y - 20 );
-        GL.Vertex2( x, y - 50 );
-        GL.Vertex2( x + 30, y - 20 );
-        GL.End();
-
-        GL.Begin( PrimitiveType.TriangleFan );
-        GL.Color3( 0.1f, 0.3f, 0.8f );
-        GL.Vertex2( x + rx, y );
-        GL.Vertex2( x + rx + 80, y + 30 );
-        GL.Vertex2( x + rx + 100, y );
-        GL.Vertex2( x + rx + 80, y - 30 );
-        GL.Vertex2( x + rx, y );
-        GL.End();
-
-        float eyeX = x - 20;
-        float eyeY = y + 20;
-
-        DrawEllipse( eyeX, eyeY, 8, 10, Color4.White );
-        DrawEllipse( eyeX, eyeY, 5, 7, new Color4( 0.3f, 0.9f, 0.5f, 1.0f ) );
-        DrawEllipse( eyeX, eyeY, 3, 4, Color4.Black );
-
-        GL.Begin( PrimitiveType.Points );
-        GL.PointSize( 2.0f );
-        GL.Color3( 1.0f, 1.0f, 1.0f );
-        GL.Vertex2( eyeX + 2, eyeY + 3 );
-        GL.End();
-
-        GL.PopMatrix();
-    }
-
-    void DrawFish4( float x, float y, float rx, float ry )
-    {
-        GL.PushMatrix();
-        GL.Translate( -_fishOffsets[ 3 ], 0.0f, 0.0f );
-
-        GL.Begin( PrimitiveType.TriangleFan );
-        GL.Color3( 0.3f, 0.9f, 0.3f );
-        GL.Vertex2( x, y );
-        GL.Color3( 0.1f, 0.7f, 0.1f );
-        for ( int i = 0; i <= 360; i += 30 )
-        {
-            float angle = i * ( float )Math.PI / 180;
-            GL.Vertex2( x + rx * ( float )Math.Cos( angle ), y + ry * ( float )Math.Sin( angle ) );
-        }
-        GL.End();
-
-        GL.Begin( PrimitiveType.TriangleFan );
-        GL.Color3( 0.2f, 0.7f, 0.2f );
-        GL.Vertex2( x + rx, y );
-        for ( int i = -3; i <= 3; i++ )
-        {
-            float offset = i * 20;
-            GL.Color3( 0.3f - i * 0.05f, 0.8f - i * 0.05f, 0.3f - i * 0.05f );
-            GL.Vertex2( x + rx + 70, y + offset );
-        }
-        GL.Vertex2( x + rx, y );
-        GL.End();
-
-        DrawEllipse( x - 45, y + 20, 10, 12, Color4.White );
-        DrawEllipse( x - 45, y + 20, 7, 9, new Color4( 1.0f, 0.9f, 0.1f, 1.0f ) );
-        DrawEllipse( x - 45, y + 20, 4, 5, Color4.Black );
-
-        GL.Begin( PrimitiveType.Points );
-        GL.PointSize( 3.0f );
-        GL.Color3( 1.0f, 1.0f, 1.0f );
-        GL.Vertex2( x - 42, y + 24 );
-        GL.End();
-
-        GL.PopMatrix();
-    }
-
-    void DrawFish5( float x, float y, float rx, float ry )
-    {
-        GL.PushMatrix();
-
-        if ( _fishOffsets[ 4 ] > 1300.0f )
-        {
-            _fishOffsets[ 4 ] = -600.0f;
-        }
-
-        if ( _fishOffsets[ 4 ] <= -100 && _fishOffsets[ 4 ] >= -102 )
-        {
-            _bubbles.Add( new Bubble( new Vector2( _fishOffsets[ 4 ] + 280.0f, y ), new Vector2( 0, 50 ), new Vector2( 0, 1 ) ) );
-        }
-
-        GL.Translate( -_fishOffsets[ 4 ], 0.0f, 0.0f );
-
-        DrawEllipse( x, y, rx, ry, new Color4( 0.97f, 0.08f, 0.78f, 1.0f ) );
-
-        GL.Begin( PrimitiveType.Polygon );
-        GL.Color3( 0.97f, 0.08f, 0.78f );
-        GL.Vertex2( x + rx, y );
-        GL.Color3( 0.0f, 0.0f, 1f );
-        GL.Vertex2( x + rx + FishBasePositions[ 3 ].Y, y + FishBasePositions[ 3 ].Y );
-        GL.Color3( 0.0f, 0.0f, 1f );
-        GL.Vertex2( x + rx + 100.0f, y + 20.0f );
-        GL.Vertex2( x + rx + 70.0f, y );
-        GL.Vertex2( x + rx + 100.0f, y - 20.0f );
-        GL.Color3( 0.0f, 0.0f, 1f );
-        GL.Vertex2( x + rx + FishBasePositions[ 3 ].Y, y - FishBasePositions[ 3 ].Y );
-        GL.Color3( 0.0f, 0.0f, 1f );
-        GL.Vertex2( x + rx, y );
-        GL.End();
-
-        DrawEllipse( x - FishBasePositions[ 3 ].Y, y + 20.0f, ry / 2, ry / 2, Color4.White );
-        DrawEllipse( x - 40.0f, y + 30.0f, ry / 4, ry / 4, Color4.Black );
-
-        GL.PopMatrix();
-    }
-
-    void DrawStone1( float x, float y, float width, float height )
-    {
-        GL.Begin( PrimitiveType.TriangleFan );
-        GL.Color3( 0.3f, 0.2f, 0.1f );
-        GL.Vertex2( x, y );
-
-        for ( int i = 0; i <= 12; i++ )
-        {
-            float angle = i * 2 * ( float )Math.PI / 12;
-            float brightness = 0.5f + 0.3f * ( float )Math.Sin( angle );
-            GL.Color3( brightness * 0.6f, brightness * 0.4f, brightness * 0.2f );
-            GL.Vertex2(
-                x + width * ( float )Math.Cos( angle ) * 0.8f,
-                y + height * ( float )Math.Sin( angle ) * 0.5f
-            );
-        }
-        GL.End();
-    }
-
-    void DrawStone2( float x, float y, float width, float height )
-    {
-        GL.Begin( PrimitiveType.TriangleFan );
-        GL.Color3( 0.5f, 0.5f, 0.5f );
-        GL.Vertex2( x, y );
-
-        for ( int i = 0; i <= 10; i++ )
-        {
-            float angle = i * 2 * ( float )Math.PI / 10;
-            float shade = 0.3f + 0.5f * ( i % 3 ) * 0.3f;
-            GL.Color3( 0.6f - shade, 0.6f - shade, 0.6f - shade );
-            GL.Vertex2(
-                x + width * ( float )Math.Cos( angle ) * 0.9f,
-                y + height * ( float )Math.Sin( angle ) * 0.8f
-            );
-        }
-        GL.End();
-    }
-
-    void DrawStone3( float x, float y, float width, float height )
-    {
-        GL.Begin( PrimitiveType.Polygon );
-
-        GL.Color3( 0.4f, 0.3f, 0.2f );
-        GL.Vertex2( x - width / 2, y - height / 4 );
-
-        GL.Color3( 0.5f, 0.4f, 0.3f );
-        GL.Vertex2( x - width / 3, y + height / 3 );
-
-        GL.Color3( 0.6f, 0.5f, 0.4f );
-        GL.Vertex2( x + width / 4, y + height / 2 );
-
-        GL.Color3( 0.5f, 0.4f, 0.3f );
-        GL.Vertex2( x + width / 2, y );
-
-        GL.Color3( 0.4f, 0.3f, 0.2f );
-        GL.Vertex2( x + width / 3, y - height / 2 );
-        GL.End();
-    }
-
-    void DrawStone4( float x, float y, float width, float height )
-    {
-        GL.Begin( PrimitiveType.TriangleFan );
-        GL.Color3( 0.7f, 0.6f, 0.5f );
-        GL.Vertex2( x, y );
-
-        for ( int i = 0; i <= 8; i++ )
-        {
-            float angle = i * 2 * ( float )Math.PI / 8;
-            GL.Color3( 0.5f + 0.2f * ( i % 3 ), 0.7f + 0.2f * ( i % 3 ), 0.9f + 0.2f * ( i % 3 ) );
-            GL.Vertex2(
-                x + width * ( float )Math.Cos( angle ),
-                y + height * ( float )Math.Sin( angle ) * 0.3f
-            );
-        }
-        GL.End();
-    }
-
-    void DrawStone5( float x, float y, float width, float height )
-    {
-        GL.Begin( PrimitiveType.TriangleFan );
-        GL.Color3( 0.4f, 0.3f, 0.2f );
-        GL.Vertex2( x, y );
-
-        for ( int i = 0; i <= 8; i++ )
-        {
-            float angle = i * 2 * ( float )Math.PI / 8;
-            GL.Color3( 0.5f, 0.4f, 0.3f );
-            GL.Vertex2(
-                x + width * ( float )Math.Cos( angle ),
-                y + height * ( float )Math.Sin( angle )
-            );
         }
         GL.End();
     }

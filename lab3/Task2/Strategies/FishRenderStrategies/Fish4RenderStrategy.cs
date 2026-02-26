@@ -1,0 +1,69 @@
+using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
+using Task2.Components;
+
+namespace Task2.Strategies.FishRenderStrategies;
+
+public class Fish4RenderStrategy : IRenderStrategy<Fish>
+{
+    public void Render(Fish fish)
+    {
+        float x = fish.Position.X;
+        float y = fish.Position.Y;
+        float rx = fish.Size.X;
+        float ry = fish.Size.Y;
+
+        GL.PushMatrix();
+        GL.Translate(-fish.Offset, 0.0f, 0.0f);
+
+        GL.Begin(PrimitiveType.TriangleFan);
+        GL.Color3(0.3f, 0.9f, 0.3f);
+        GL.Vertex2(x, y);
+        GL.Color3(0.1f, 0.7f, 0.1f);
+        for (int i = 0; i <= 360; i += 30)
+        {
+            float angle = i * (float)Math.PI / 180;
+            GL.Vertex2(x + rx * (float)Math.Cos(angle), y + ry * (float)Math.Sin(angle));
+        }
+        GL.End();
+
+        GL.Begin(PrimitiveType.TriangleFan);
+        GL.Color3(0.2f, 0.7f, 0.2f);
+        GL.Vertex2(x + rx, y);
+        for (int i = -3; i <= 3; i++)
+        {
+            float offset = i * 20;
+            GL.Color3(0.3f - i * 0.05f, 0.8f - i * 0.05f, 0.3f - i * 0.05f);
+            GL.Vertex2(x + rx + 70, y + offset);
+        }
+        GL.Vertex2(x + rx, y);
+        GL.End();
+
+        DrawEllipse(x - 45, y + 20, 10, 12, Color4.White);
+        DrawEllipse(x - 45, y + 20, 7, 9, new Color4(1.0f, 0.9f, 0.1f, 1.0f));
+        DrawEllipse(x - 45, y + 20, 4, 5, Color4.Black);
+
+        GL.Begin(PrimitiveType.Points);
+        GL.PointSize(3.0f);
+        GL.Color3(1.0f, 1.0f, 1.0f);
+        GL.Vertex2(x - 42, y + 24);
+        GL.End();
+
+        GL.PopMatrix();
+    }
+
+    private void DrawEllipse(float x, float y, float radiusX, float radiusY, Color4 color, PrimitiveType primitiveType = PrimitiveType.Polygon)
+    {
+        GL.Begin(primitiveType);
+        GL.Color4(color);
+
+        int segments = 360;
+
+        for (int i = 0; i < segments; i++)
+        {
+            float degInRad = i * (float)Math.PI / 180;
+            GL.Vertex2(x + Math.Cos(degInRad) * radiusX, y + Math.Sin(degInRad) * radiusY);
+        }
+        GL.End();
+    }
+}
