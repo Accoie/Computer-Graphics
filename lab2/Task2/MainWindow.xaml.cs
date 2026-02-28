@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Windows;
@@ -9,10 +9,8 @@ using System.Windows.Shapes;
 
 namespace Task2
 {
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
-        // сделать чтобы отслеживало курсор за пределами холста
-        // разобраться почему картинка уменьшается при ресайзе окна(почему координаты мыши старнно изменяются при ресайзе)
         private const int CanvasWidth = 1100;
         private const int CanvasHeight = 700;
         private const double MinOffset = 1.0;
@@ -23,30 +21,30 @@ namespace Task2
 
         private const int JpegQualityLevel = 90;
 
-        private readonly Color CanvasBackgroundColor = Colors.White;
+        private readonly Color _canvasBackgroundColor = Colors.White;
 
-        private static readonly string[] imageOpenFormats = { "*.png", "*.jpg", "*.jpeg", "*.bmp" };
-        private static readonly string[] imageSaveFormats = { "*.png", "*.jpg", "*.bmp" };
+        private static readonly string[] ImageOpenFormats = { "*.png", "*.jpg", "*.jpeg", "*.bmp" };
+        private static readonly string[] ImageSaveFormats = { "*.png", "*.jpg", "*.bmp" };
 
-        private readonly string ImageFilesFilter;
-        private readonly string SaveFilesFilter;
+        private readonly string _imageFilesFilter;
+        private readonly string _saveFilesFilter;
 
         private const string WindowTitle = "Image Painter";
         private const string NewCanvasTitle = "Image Painter - New Canvas";
         private const string SaveDialogTitle = "Сохранить рисунок";
 
-        private bool isDrawing = false;
-        private Point lastPoint;
-        private Polyline currentPath;
-        private Color drawingColor = Colors.Black;
-        private double brushThickness = DefaultBrushThickness;
+        private bool _isDrawing;
+        private Point _lastPoint;
+        private Polyline _currentPath;
+        private Color _drawingColor = Colors.Black;
+        private double _brushThickness = DefaultBrushThickness;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            ImageFilesFilter = CreateFileFilter( imageOpenFormats, includeAllFilesFilter: true );
-            SaveFilesFilter = CreateFileFilter( imageSaveFormats, includeAllFilesFilter: false );
+            _imageFilesFilter = CreateFileFilter( ImageOpenFormats, includeAllFilesFilter: true );
+            _saveFilesFilter = CreateFileFilter( ImageSaveFormats, includeAllFilesFilter: false );
 
             CreateNewCanvas( CanvasWidth, CanvasHeight );
         }
@@ -69,6 +67,12 @@ namespace Task2
             {
                 BitmapImage image = LoadImageFromFile( filePath );
                 ImageView.Source = image;
+                ImageView.Width = image.PixelWidth;
+                ImageView.Height = image.PixelHeight;
+                DrawingCanvas.Width = image.PixelWidth;
+                DrawingCanvas.Height = image.PixelHeight;
+                DrawingGrid.Width = image.PixelWidth;
+                DrawingGrid.Height = image.PixelHeight;
                 DrawingCanvas.Children.Clear();
                 string fileName = System.IO.Path.GetFileName( filePath );
                 Title = $"{WindowTitle} - {fileName}";
@@ -83,7 +87,7 @@ namespace Task2
         {
             var dialog = new SaveFileDialog
             {
-                Filter = SaveFilesFilter,
+                Filter = _saveFilesFilter,
                 Title = SaveDialogTitle
             };
 
@@ -111,11 +115,11 @@ namespace Task2
 
         private void MenuItem_SelectColor_Click( object sender, RoutedEventArgs e )
         {
-            var dialog = new ColorPickerDialog( drawingColor );
+            var dialog = new ColorPickerDialog( _drawingColor );
 
             if ( dialog.ShowDialog() == true )
             {
-                drawingColor = dialog.SelectedColor;
+                _drawingColor = dialog.SelectedColor;
             }
         }
 
@@ -126,20 +130,20 @@ namespace Task2
 
         private void DrawingCanvas_MouseLeftButtonDown( object sender, MouseButtonEventArgs e )
         {
-            isDrawing = true;
-            lastPoint = e.GetPosition( DrawingCanvas );
+            _isDrawing = true;
+            _lastPoint = e.GetPosition( DrawingCanvas );
 
-            currentPath = new Polyline
+            _currentPath = new Polyline
             {
-                Stroke = new SolidColorBrush( drawingColor ),
-                StrokeThickness = brushThickness,
+                Stroke = new SolidColorBrush( _drawingColor ),
+                StrokeThickness = _brushThickness,
                 StrokeLineJoin = PenLineJoin.Round,
                 StrokeStartLineCap = PenLineCap.Round,
                 StrokeEndLineCap = PenLineCap.Round
             };
 
-            currentPath.Points.Add( lastPoint );
-            DrawingCanvas.Children.Add( currentPath );
+            _currentPath.Points.Add( _lastPoint );
+            DrawingCanvas.Children.Add( _currentPath );
 
             Mouse.Capture( DrawingCanvas );
             e.Handled = true;
@@ -147,43 +151,52 @@ namespace Task2
 
         private void DrawingCanvas_MouseMove( object sender, MouseEventArgs e )
         {
-            if ( !isDrawing || e.LeftButton != MouseButtonState.Pressed )
+            if ( !_isDrawing || e.LeftButton != MouseButtonState.Pressed )
             {
                 return;
             }
 
             Point currentPoint = e.GetPosition( DrawingCanvas );
-            Console.WriteLine( currentPoint.X.ToString(), currentPoint.Y.ToString() );
-            bool outOfBounds = currentPoint.X < 0 || currentPoint.Y < 0 ||
-                currentPoint.X > DrawingCanvas.ActualWidth ||
-                currentPoint.Y > DrawingCanvas.ActualHeight;
+            ProcessDrawingMove( currentPoint );
+            e.Handled = true;
+        }
 
-            if ( outOfBounds )
+        private void Window_MouseMove( object sender, MouseEventArgs e )
+        {
+            if ( !_isDrawing || e.LeftButton != MouseButtonState.Pressed )
             {
                 return;
             }
 
-            double dx = currentPoint.X - lastPoint.X;
-            double dy = currentPoint.Y - lastPoint.Y;
-
-            bool inBounds = dx * dx + dy * dy > MinOffset;
-
-            if ( inBounds )
-            {
-                currentPath.Points.Add( currentPoint );
-                lastPoint = currentPoint;
-            }
-
-            e.Handled = true;
+            Point currentPoint = e.GetPosition( DrawingCanvas );
+            ProcessDrawingMove( currentPoint );
         }
 
         private void Window_MouseLeftButtonUp( object sender, MouseButtonEventArgs e )
         {
-            if ( isDrawing )
+            if ( _isDrawing )
             {
-                isDrawing = false;
-                currentPath = null;
+                _isDrawing = false;
+                _currentPath = null;
                 Mouse.Capture( null );
+            }
+        }
+        
+        private void ProcessDrawingMove( Point currentPoint )
+        {
+            double clampedX = Math.Max( 0, Math.Min( currentPoint.X, DrawingCanvas.ActualWidth ) );
+            double clampedY = Math.Max( 0, Math.Min( currentPoint.Y, DrawingCanvas.ActualHeight ) );
+            var clampedPoint = new Point( clampedX, clampedY );
+
+            double dx = clampedPoint.X - _lastPoint.X;
+            double dy = clampedPoint.Y - _lastPoint.Y;
+
+            bool shouldAddPoint = dx * dx + dy * dy > MinOffset;
+
+            if ( shouldAddPoint )
+            {
+                _currentPath.Points.Add( clampedPoint );
+                _lastPoint = clampedPoint;
             }
         }
 
@@ -213,11 +226,17 @@ namespace Task2
             var dv = new DrawingVisual();
             using ( var dc = dv.RenderOpen() )
             {
-                dc.DrawRectangle( new SolidColorBrush( CanvasBackgroundColor ), null, new Rect( 0, 0, width, height ) );
+                dc.DrawRectangle( new SolidColorBrush( _canvasBackgroundColor ), null, new Rect( 0, 0, width, height ) );
             }
             bitmap.Render( dv );
 
             ImageView.Source = bitmap;
+            ImageView.Width = width;
+            ImageView.Height = height;
+            DrawingCanvas.Width = width;
+            DrawingCanvas.Height = height;
+            DrawingGrid.Width = width;
+            DrawingGrid.Height = height;
             DrawingCanvas.Children.Clear();
             Title = NewCanvasTitle;
         }
@@ -281,7 +300,7 @@ namespace Task2
 
         private string ShowOpenFileDialog()
         {
-            var dialog = new OpenFileDialog { Filter = ImageFilesFilter };
+            var dialog = new OpenFileDialog { Filter = _imageFilesFilter };
             return dialog.ShowDialog() == true ? dialog.FileName : null;
         }
 

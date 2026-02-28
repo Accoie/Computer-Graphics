@@ -6,13 +6,13 @@ namespace Task1;
 
 public class BezierGameWindow : GameWindow
 {
-    private const float minX = -4.0f;
-    private const float maxX = 4.0f;
-    private const float minY = -4.0f;
-    private const float maxY = 4.0f;
-    private const float step = 0.02f;
+    private const float MinX = -4.0f;
+    private const float MaxX = 4.0f;
+    private const float MinY = -4.0f;
+    private const float MaxY = 4.0f;
+    private const float Step = 0.02f;
 
-    private readonly Point[] bezierPoints =
+    private readonly Point[] _bezierPoints =
     [
         new Point(-2.0f, 1.5f),
         new Point(1.0f, 3.5f),
@@ -51,26 +51,6 @@ public class BezierGameWindow : GameWindow
         SwapBuffers();
     }
 
-    private void SetupProjection()
-    {
-        GL.MatrixMode( MatrixMode.Projection );
-        GL.LoadIdentity();
-
-        float aspect = ( float )ClientSize.X / ClientSize.Y;
-
-        if ( aspect > 1 )
-        {
-            GL.Ortho( minX * aspect, maxX * aspect, minY * aspect, maxY * aspect, -1, 1 );
-        }
-        else
-        {
-            GL.Ortho( minX / aspect, maxX / aspect, minY / aspect, maxY / aspect, -1, 1 );
-        }
-
-        GL.MatrixMode( MatrixMode.Modelview );
-        GL.LoadIdentity();
-    }
-
     protected override void OnUpdateFrame( FrameEventArgs args )
     {
         base.OnUpdateFrame( args );
@@ -88,12 +68,32 @@ public class BezierGameWindow : GameWindow
         GL.Viewport( 0, 0, ClientSize.X, ClientSize.Y );
     }
 
+    private void SetupProjection()
+    {
+        GL.MatrixMode( MatrixMode.Projection );
+        GL.LoadIdentity();
+
+        float aspect = ( float )ClientSize.X / ClientSize.Y;
+
+        if ( aspect > 1 )
+        {
+            GL.Ortho( MinX * aspect, MaxX * aspect, MinY * aspect, MaxY * aspect, -1, 1 );
+        }
+        else
+        {
+            GL.Ortho( MinX / aspect, MaxX / aspect, MinY / aspect, MaxY / aspect, -1, 1 );
+        }
+
+        GL.MatrixMode( MatrixMode.Modelview );
+        GL.LoadIdentity();
+    }
+    
     private void DrawBezierCurve()
     {
         GL.Begin( PrimitiveType.LineStrip );
         GL.Color3( 0.0f, 0.0f, 1.0f );
 
-        for ( float t = 0; t <= 1; t += step )
+        for ( float t = 0; t <= 1; t += Step )
         {
             Point p = CalculateBezierPoint( t );
             GL.Vertex2( p.X, p.Y );
@@ -107,9 +107,9 @@ public class BezierGameWindow : GameWindow
 
     private Point CalculateBezierPoint( float t )
     {
-        Point a = Lerp( bezierPoints[ 0 ], bezierPoints[ 1 ], t );
-        Point b = Lerp( bezierPoints[ 1 ], bezierPoints[ 2 ], t );
-        Point c = Lerp( bezierPoints[ 2 ], bezierPoints[ 3 ], t );
+        Point a = Lerp( _bezierPoints[ 0 ], _bezierPoints[ 1 ], t );
+        Point b = Lerp( _bezierPoints[ 1 ], _bezierPoints[ 2 ], t );
+        Point c = Lerp( _bezierPoints[ 2 ], _bezierPoints[ 3 ], t );
 
         Point d = Lerp( a, b, t );
         Point e = Lerp( b, c, t );
@@ -131,7 +131,7 @@ public class BezierGameWindow : GameWindow
         GL.Begin( PrimitiveType.Points );
         GL.Color3( 0.0f, 0.5f, 0.9f );
 
-        foreach ( var point in bezierPoints )
+        foreach ( var point in _bezierPoints )
         {
             GL.Vertex2( point.X, point.Y );
         }
@@ -148,10 +148,10 @@ public class BezierGameWindow : GameWindow
         GL.Begin( PrimitiveType.Lines );
         GL.Color3( 0.5f, 0.5f, 0.5f );
 
-        for ( int i = 0; i < bezierPoints.Length - 1; i++ )
+        for ( int i = 0; i < _bezierPoints.Length - 1; i++ )
         {
-            GL.Vertex2( bezierPoints[ i ].X, bezierPoints[ i ].Y );
-            GL.Vertex2( bezierPoints[ i + 1 ].X, bezierPoints[ i + 1 ].Y );
+            GL.Vertex2( _bezierPoints[ i ].X, _bezierPoints[ i ].Y );
+            GL.Vertex2( _bezierPoints[ i + 1 ].X, _bezierPoints[ i + 1 ].Y );
         }
         GL.End();
 
@@ -163,13 +163,13 @@ public class BezierGameWindow : GameWindow
         GL.Begin( PrimitiveType.Lines );
 
         GL.Color3( 0.2f, 0.2f, 0.2f );
-        GL.Vertex2( minX, 0 );
-        GL.Vertex2( maxX, 0 );
-        GL.Vertex2( 0, minY );
-        GL.Vertex2( 0, maxY );
+        GL.Vertex2( MinX, 0 );
+        GL.Vertex2( MaxX, 0 );
+        GL.Vertex2( 0, MinY );
+        GL.Vertex2( 0, MaxY );
 
         GL.Color3( 0.5f, 0.5f, 0.5f );
-        for ( int i = ( int )minX; i <= maxX; i++ )
+        for ( int i = ( int )MinX; i <= MaxX; i++ )
         {
             if ( i != 0 )
             {
@@ -178,7 +178,7 @@ public class BezierGameWindow : GameWindow
             }
         }
 
-        for ( int i = ( int )minY; i <= maxY; i++ )
+        for ( int i = ( int )MinY; i <= MaxY; i++ )
         {
             if ( i != 0 )
             {

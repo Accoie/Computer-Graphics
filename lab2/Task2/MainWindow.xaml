@@ -1,7 +1,8 @@
-﻿<Window x:Class="Task2.MainWindow"
+<Window x:Class="Task2.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Image Painter" Height="700" Width="1000" MinWidth="400" MinHeight="300"
+        MouseMove="Window_MouseMove"
         MouseLeftButtonUp="Window_MouseLeftButtonUp">
 
     <Grid>
@@ -26,7 +27,7 @@
         <Border Grid.Row="1" BorderBrush="Black" BorderThickness="1" Background="White">
             <Viewbox Stretch="Uniform">
                 <Grid x:Name="DrawingGrid" Background="White">
-                    <Image x:Name="ImageView" Stretch="Uniform"/>
+                    <Image x:Name="ImageView" Stretch="None"/>
                     <Canvas x:Name="DrawingCanvas" Background="Transparent"
                             MouseLeftButtonDown="DrawingCanvas_MouseLeftButtonDown"
                             MouseMove="DrawingCanvas_MouseMove"/>
