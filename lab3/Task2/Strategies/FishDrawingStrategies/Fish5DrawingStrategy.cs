@@ -2,11 +2,11 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using Task2.Components;
 
-namespace Task2.Strategies.FishRenderStrategies;
+namespace Task2.Strategies.FishDrawingStrategies;
 
-public class Fish5RenderStrategy : IRenderStrategy<Fish>
+public class Fish5DrawingStrategy : IDrawingStrategy<Fish>
 {
-    public void Render(Fish fish)
+    public void Draw(Fish fish)
     {
         float x = fish.Position.X;
         float y = fish.Position.Y;

@@ -1,11 +1,11 @@
 using OpenTK.Graphics.OpenGL;
 using Task2.Components;
 
-namespace Task2.Strategies.StoneRenderStrategies;
+namespace Task2.Strategies.StoneDrawingStrategies;
 
-public class Stone3RenderStrategy : IRenderStrategy<Stone>
+public class Stone3DrawingStrategy : IDrawingStrategy<Stone>
 {
-    public void Render(Stone stone)
+    public void Draw(Stone stone)
     {
         float x = stone.Position.X;
         float y = stone.Position.Y;

@@ -9,7 +9,7 @@ class Program
     static void Main()
     {
 
-        var nativeWinSettings = new NativeWindowSettings()
+        NativeWindowSettings nativeWinSettings = new NativeWindowSettings()
         {
             ClientSize = new Vector2i( 600, 600 ),
             Location = new Vector2i( 30, 30 ),

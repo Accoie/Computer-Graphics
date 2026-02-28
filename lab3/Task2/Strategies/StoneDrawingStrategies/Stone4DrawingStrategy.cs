@@ -1,11 +1,11 @@
 using OpenTK.Graphics.OpenGL;
 using Task2.Components;
 
-namespace Task2.Strategies.StoneRenderStrategies;
+namespace Task2.Strategies.StoneDrawingStrategies;
 
-public class Stone5RenderStrategy : IRenderStrategy<Stone>
+public class Stone4DrawingStrategy : IDrawingStrategy<Stone>
 {
-    public void Render(Stone stone)
+    public void Draw(Stone stone)
     {
         float x = stone.Position.X;
         float y = stone.Position.Y;
@@ -13,16 +13,16 @@ public class Stone5RenderStrategy : IRenderStrategy<Stone>
         float height = stone.Size.Y;
 
         GL.Begin(PrimitiveType.TriangleFan);
-        GL.Color3(0.4f, 0.3f, 0.2f);
+        GL.Color3(0.7f, 0.6f, 0.5f);
         GL.Vertex2(x, y);
 
         for (int i = 0; i <= 8; i++)
         {
             float angle = i * 2 * (float)Math.PI / 8;
-            GL.Color3(0.5f, 0.4f, 0.3f);
+            GL.Color3(0.5f + 0.2f * (i % 3), 0.7f + 0.2f * (i % 3), 0.9f + 0.2f * (i % 3));
             GL.Vertex2(
                 x + width * (float)Math.Cos(angle),
-                y + height * (float)Math.Sin(angle)
+                y + height * (float)Math.Sin(angle) * 0.3f
             );
         }
         GL.End();
