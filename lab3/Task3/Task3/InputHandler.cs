@@ -9,24 +9,27 @@ namespace Task3
         
         private readonly KeyState _leftKey = new();
         private readonly KeyState _rightKey = new();
-        private readonly KeyState _spaceKey = new();
-        private readonly KeyState _rKey = new();
+        private readonly KeyState _downKey = new();
         private readonly KeyState _upKey = new();
+        private readonly KeyState _rKey = new();
+        private readonly KeyState _pKey = new();
 
         public void Update(KeyboardState keyboard)
         {
-            _upKey.Update(keyboard.IsKeyDown(Keys.W));
-            _leftKey.Update(keyboard.IsKeyDown(Keys.A));
-            _rightKey.Update(keyboard.IsKeyDown(Keys.D));
-            _spaceKey.Update(keyboard.IsKeyDown(Keys.Space));
+            _leftKey.Update(keyboard.IsKeyDown(Keys.Left));
+            _rightKey.Update(keyboard.IsKeyDown(Keys.Right));
+            _downKey.Update(keyboard.IsKeyDown(Keys.Down));
+            _upKey.Update(keyboard.IsKeyDown(Keys.Up));
             _rKey.Update(keyboard.IsKeyDown(Keys.R));
+            _pKey.Update(keyboard.IsKeyDown(Keys.P));
         }
 
         public bool IsMoveLeftPressed() => _leftKey.IsPressed(InitialDelay, RepeatDelay);
         public bool IsMoveRightPressed() => _rightKey.IsPressed(InitialDelay, RepeatDelay);
         public bool IsRotatePressed() => _upKey.IsPressedOnce();
-        public bool IsFastDropHeld() => _spaceKey.IsHeld();
+        public bool IsFastDropHeld() => _downKey.IsHeld();
         public bool IsRestartPressed() => _rKey.IsPressedOnce();
+        public bool IsPausePressed() => _pKey.IsPressedOnce();
 
         private class KeyState
         {

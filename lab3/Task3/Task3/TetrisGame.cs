@@ -18,11 +18,19 @@ namespace Task3
         private int _score;
         private string _scoreStr = "0";
         
+        private int _level = 1;
+        private int _linesCleared;
+        private int _linesNeeded;
+        
         private bool _isGameOver;
+        private bool _isPaused;
         
         private double _fallTimer;
         private double _fastDropTimer;
-        private const double FallInterval = GameConfig.FallInterval;
+        private double _currentFallInterval;
+        
+        private ShapeType _nextShapeType;
+        private int _nextShapeColor;
 
         public TetrisGame() : base(
             new GameWindowSettings 
@@ -43,7 +51,26 @@ namespace Task3
             _inputHandler = new InputHandler();
             _renderer = new Renderer(ClientSize.X, ClientSize.Y);
             
-            _currentShape.SpawnNew(_board);
+            InitializeLevel();
+            GenerateNextPiece();
+            _currentShape.SpawnNew();
+        }
+
+        private void InitializeLevel()
+        {
+            _linesNeeded = GameConfig.BaseLinesPerLevel + (_level - 1) * GameConfig.LinesPerLevelIncrease;
+            _currentFallInterval = CalculateFallInterval();
+        }
+        
+        private double CalculateFallInterval()
+        {
+            double interval = GameConfig.BaseFallInterval - (_level - 1) * GameConfig.FallIntervalDecrease;
+            return Math.Max(interval, GameConfig.MinFallInterval);
+        }
+
+        private void GenerateNextPiece()
+        {
+            (_nextShapeType, _nextShapeColor) = Shape.GenerateNext();
         }
 
         protected override void OnLoad()
@@ -76,7 +103,8 @@ namespace Task3
             GL.Disable(EnableCap.DepthTest);
             
             _renderer.DrawBoard(_board, _currentShape);
-            _renderer.DrawUi(_score, _scoreStr, _isGameOver);
+            _renderer.DrawUi(_level, _linesCleared, _linesNeeded, _score, _scoreStr, 
+                _nextShapeType, _nextShapeColor, _isGameOver, _isPaused);
             
             SwapBuffers();
         }
@@ -88,19 +116,20 @@ namespace Task3
             var keyboard = KeyboardState;
             _inputHandler.Update(keyboard);
             
+            HandleSystemInput(keyboard);
+            
+            if (_isGameOver || _isPaused)
+            {
+                return;
+            }
+            
             HandleMovementInput();
             HandleFastDrop(e);
-            HandleSystemInput(keyboard);
             HandleAutoFall(e);
         }
         
         private void HandleMovementInput()
         {
-            if (_isGameOver)
-            {
-                return;
-            }
-            
             if (_inputHandler.IsMoveLeftPressed())
             {
                 _currentShape.MoveLeft(_board);
@@ -119,11 +148,6 @@ namespace Task3
         
         private void HandleFastDrop(FrameEventArgs e)
         {
-            if (_isGameOver)
-            {
-                return;
-            }
-            
             if (_inputHandler.IsFastDropHeld())
             {
                 _fastDropTimer += e.Time;
@@ -158,13 +182,18 @@ namespace Task3
             {
                 RestartGame();
             }
+            
+            if (_inputHandler.IsPausePressed() && !_isGameOver)
+            {
+                _isPaused = !_isPaused;
+            }
         }
         
         private void HandleAutoFall(FrameEventArgs e)
         {
             _fallTimer += e.Time;
             
-            if (_fallTimer < FallInterval || _isGameOver)
+            if (_fallTimer < _currentFallInterval)
             {
                 return;
             }
@@ -180,15 +209,62 @@ namespace Task3
         private void HandleShapeLanded()
         {
             int lines = _board.RemoveCompleteLines();
-            _score += lines * GameConfig.PointsPerLine;
+    
+            if (lines > 0 && lines < GameConfig.LineScores.Length)
+            {
+                _score += GameConfig.LineScores[lines];
+                _linesCleared += lines;
+                
+                if (_linesCleared >= _linesNeeded)
+                {
+                    HandleLevelUp();
+                }
+            }
+    
             UpdateScoreString();
             
-            _currentShape.SpawnNew(_board);
-            
+            _currentShape.ApplyNext(_nextShapeType, _nextShapeColor);
+            GenerateNextPiece();
+    
             if (_currentShape.CheckCollisionWithBoard(_board))
             {
                 _isGameOver = true;
             }
+        }
+        
+        private void HandleLevelUp()
+        {
+            int emptyLines = CountEmptyLines();
+            _score += emptyLines * GameConfig.EmptyLineBonus;
+            
+            _level++;
+            _linesCleared = 0;
+            _board.Clear();
+            
+            InitializeLevel();
+            UpdateScoreString();
+        }
+        
+        private int CountEmptyLines()
+        {
+            int count = 0;
+            for (int y = 0; y < Board.Height; y++)
+            {
+                bool empty = true;
+                for (int x = 0; x < Board.Width; x++)
+                {
+                    if (_board[x, y] >= 2)
+                    {
+                        empty = false;
+                        break;
+                    }
+                }
+                if (empty)
+                {
+                    count++;
+                }
+            }
+            return count;
         }
         
         private void UpdateScoreString()
@@ -203,13 +279,17 @@ namespace Task3
         private void RestartGame()
         {
             _isGameOver = false;
+            _isPaused = false;
+            _level = 1;
             _score = 0;
             _scoreStr = "0";
+            _linesCleared = 0;
             _board.Clear();
-            _currentShape.SpawnNew(_board);
+            InitializeLevel();
+            GenerateNextPiece();
+            _currentShape.SpawnNew();
             _fallTimer = 0;
             _fastDropTimer = 0;
         }
-
     }
 }

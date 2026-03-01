@@ -11,26 +11,91 @@ namespace Task3
 
     public class Shape
     {
-        private readonly int[,] _blocks = new int[4, 2];
+        private const int BlockCount = 4;
+        
+        private readonly int[,] _blocks = new int[BlockCount, 2];
         private ShapeType _shapeType;
         private int _color;
         
         private static readonly ShapeType[] AllShapeTypes = Enum.GetValues<ShapeType>();
-        private readonly Random _rand = new();
+        private static readonly Random Rand = new();
         
         public int this[int blockIndex, int coord] => _blocks[blockIndex, coord];
         public int Color => _color;
+        public ShapeType ShapeType => _shapeType;
         
-        public void SpawnNew(Board board)
+        public void SpawnNew()
         {
-            _shapeType = AllShapeTypes[_rand.Next(AllShapeTypes.Length)];
-            _color = _rand.Next(6) + 2;
+            _shapeType = AllShapeTypes[Rand.Next(AllShapeTypes.Length)];
+            _color = Rand.Next(6) + 2;
             SetInitialBlocks();
+        }
+        
+        public void CopyFrom(Shape other)
+        {
+            _shapeType = other._shapeType;
+            _color = other._color;
+            SetInitialBlocks();
+        }
+        
+        public static (ShapeType type, int color) GenerateNext()
+        {
+            ShapeType type = AllShapeTypes[Rand.Next(AllShapeTypes.Length)];
+            int color = Rand.Next(6) + 2;
+            return (type, color);
+        }
+        
+        public void ApplyNext(ShapeType type, int color)
+        {
+            _shapeType = type;
+            _color = color;
+            SetInitialBlocks();
+        }
+        
+        public static int[,] GetPreviewBlocks(ShapeType type)
+        {
+            int[,] blocks = new int[BlockCount, 2];
+            
+            switch (type)
+            {
+                case ShapeType.Line:
+                    blocks[0, 0] = 0; blocks[0, 1] = 0;
+                    blocks[1, 0] = 1; blocks[1, 1] = 0;
+                    blocks[2, 0] = 2; blocks[2, 1] = 0;
+                    blocks[3, 0] = 3; blocks[3, 1] = 0;
+                    break;
+                case ShapeType.Square:
+                    blocks[0, 0] = 0; blocks[0, 1] = 0;
+                    blocks[1, 0] = 1; blocks[1, 1] = 0;
+                    blocks[2, 0] = 0; blocks[2, 1] = 1;
+                    blocks[3, 0] = 1; blocks[3, 1] = 1;
+                    break;
+                case ShapeType.BlockL:
+                    blocks[0, 0] = 0; blocks[0, 1] = 0;
+                    blocks[1, 0] = 1; blocks[1, 1] = 0;
+                    blocks[2, 0] = 2; blocks[2, 1] = 0;
+                    blocks[3, 0] = 2; blocks[3, 1] = 1;
+                    break;
+                case ShapeType.ZigZag:
+                    blocks[0, 0] = 1; blocks[0, 1] = 0;
+                    blocks[1, 0] = 2; blocks[1, 1] = 0;
+                    blocks[2, 0] = 0; blocks[2, 1] = 1;
+                    blocks[3, 0] = 1; blocks[3, 1] = 1;
+                    break;
+                case ShapeType.BlockT:
+                    blocks[0, 0] = 0; blocks[0, 1] = 0;
+                    blocks[1, 0] = 1; blocks[1, 1] = 0;
+                    blocks[2, 0] = 2; blocks[2, 1] = 0;
+                    blocks[3, 0] = 1; blocks[3, 1] = 1;
+                    break;
+            }
+            
+            return blocks;
         }
         
         public bool CheckCollisionWithBoard(Board board)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < BlockCount; i++)
             {
                 int x = _blocks[i, 0];
                 int y = _blocks[i, 1];
@@ -49,12 +114,10 @@ namespace Task3
             if (!CanMoveDown(board))
             {
                 LockToBoard(board);
-                
                 return true;
             }
             
             ShiftBlocks(dx: 0, dy: 1);
-            
             return false;
         }
         
@@ -100,12 +163,10 @@ namespace Task3
             if (!CanMoveDown(board))
             {
                 LockToBoard(board);
-                
                 return true;
             }
             
             ShiftBlocks(dx: 0, dy: 1);
-            
             return false;
         }
 
@@ -173,7 +234,7 @@ namespace Task3
 
         private bool CanMoveDown(Board board)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < BlockCount; i++)
             {
                 int x = _blocks[i, 0];
                 int newY = _blocks[i, 1] + 1;
@@ -185,12 +246,13 @@ namespace Task3
                     return false;
                 }
             }
+            
             return true;
         }
 
         private bool CanMoveHorizontally(Board board, int dx)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < BlockCount; i++)
             {
                 int newX = _blocks[i, 0] + dx;
                 int y = _blocks[i, 1];
@@ -207,7 +269,7 @@ namespace Task3
 
         private void ShiftBlocks(int dx, int dy)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < BlockCount; i++)
             {
                 _blocks[i, 0] += dx;
                 _blocks[i, 1] += dy;
@@ -216,11 +278,12 @@ namespace Task3
 
         private void LockToBoard(Board board)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < BlockCount; i++)
             {
                 int x = _blocks[i, 0];
                 int y = _blocks[i, 1];
                 bool insideBoard = x >= 0 && x < Board.Width && y >= 0 && y < Board.Height;
+                
                 if (insideBoard)
                 {
                     board[x, y] = _color;
@@ -230,12 +293,13 @@ namespace Task3
 
         private int[,] CopyBlocks()
         {
-            int[,] copy = new int[4, 2];
-            for (int i = 0; i < 4; i++)
+            int[,] copy = new int[BlockCount, 2];
+            for (int i = 0; i < BlockCount; i++)
             {
                 copy[i, 0] = _blocks[i, 0];
                 copy[i, 1] = _blocks[i, 1];
             }
+            
             return copy;
         }
 
@@ -244,7 +308,7 @@ namespace Task3
             int cx = _blocks[1, 0];
             int cy = _blocks[1, 1];
             
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < BlockCount; i++)
             {
                 int x = _blocks[i, 0] - cx;
                 int y = _blocks[i, 1] - cy;
@@ -261,31 +325,17 @@ namespace Task3
             
             if (isHorizontal)
             {
-                temp[0, 0] = cx;    
-                temp[0, 1] = cy + 1;
-                
-                temp[1, 0] = cx;     
-                temp[1, 1] = cy;
-                
-                temp[2, 0] = cx;    
-                temp[2, 1] = cy - 1;
-                
-                temp[3, 0] = cx;    
-                temp[3, 1] = cy - 2;
+                temp[0, 0] = cx;    temp[0, 1] = cy + 1;
+                temp[1, 0] = cx;    temp[1, 1] = cy;
+                temp[2, 0] = cx;    temp[2, 1] = cy - 1;
+                temp[3, 0] = cx;    temp[3, 1] = cy - 2;
             }
             else
             {
-                temp[0, 0] = cx - 1; 
-                temp[0, 1] = cy;
-                
-                temp[1, 0] = cx;     
-                temp[1, 1] = cy;
-                
-                temp[2, 0] = cx + 1; 
-                temp[2, 1] = cy;
-                
-                temp[3, 0] = cx + 2; 
-                temp[3, 1] = cy;
+                temp[0, 0] = cx - 1; temp[0, 1] = cy;
+                temp[1, 0] = cx;     temp[1, 1] = cy;
+                temp[2, 0] = cx + 1; temp[2, 1] = cy;
+                temp[3, 0] = cx + 2; temp[3, 1] = cy;
             }
         }
 
@@ -314,7 +364,7 @@ namespace Task3
         
         private void ShiftTempBlocks(int[,] temp, int dx, int dy)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < BlockCount; i++)
             {
                 temp[i, 0] += dx;
                 temp[i, 1] += dy;
@@ -329,12 +379,13 @@ namespace Task3
             }
             
             ApplyTempBlocks(temp);
+            
             return true;
         }
 
         private bool IsValidPosition(Board board, int[,] temp)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < BlockCount; i++)
             {
                 int x = temp[i, 0];
                 int y = temp[i, 1];
@@ -350,7 +401,7 @@ namespace Task3
 
         private void ApplyTempBlocks(int[,] temp)
         {
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < BlockCount; i++)
             {
                 _blocks[i, 0] = temp[i, 0];
                 _blocks[i, 1] = temp[i, 1];

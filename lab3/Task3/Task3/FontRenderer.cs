@@ -18,6 +18,7 @@ namespace Task3
                 {
                     y -= charHeight + 4 * scale;
                     x = startX;
+                    
                     continue;
                 }
                 
@@ -36,6 +37,7 @@ namespace Task3
         private float MeasureText(string text, float scale = 1.0f)
         {
             float charWidth = GlyphSize * scale + 2 * scale;
+            
             return text.Length * charWidth;
         }
         

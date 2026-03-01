@@ -34,6 +34,7 @@ namespace Task3
             {
                 return false;
             }
+            
             return _cells[x, y] >= 2;
         }
         
@@ -65,9 +66,11 @@ namespace Task3
                 if (_cells[x, lineNumber] < 2)
                 {
                     complete = false;
+                    
                     break;
                 }
             }
+            
             return complete;
         }
 

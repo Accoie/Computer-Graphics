@@ -136,18 +136,24 @@ namespace Task3
             }
         }
         
-        public void DrawUi(int score, string scoreStr, bool isGameOver)
+        public void DrawUi(int level, int linesCleared, int linesNeeded, int score, string scoreStr,
+            ShapeType nextShapeType, int nextShapeColor, bool isGameOver, bool isPaused)
         {
             int boardWidth = Board.Width * _cellSize;
             int boardHeight = Board.Height * _cellSize;
             
             DrawTitle(boardWidth, boardHeight);
-            DrawScore(scoreStr, boardWidth, boardHeight);
+            DrawInfoPanel(level, linesCleared, linesNeeded, score, scoreStr, boardWidth, boardHeight);
+            DrawNextPiecePreview(nextShapeType, nextShapeColor, boardWidth, boardHeight);
             DrawControls(boardHeight);
             
             if (isGameOver)
             {
                 DrawGameOverOverlay(score, boardWidth, boardHeight);
+            }
+            else if (isPaused)
+            {
+                DrawPauseOverlay(boardWidth, boardHeight);
             }
         }
         
@@ -157,12 +163,67 @@ namespace Task3
             _fontRenderer.DrawTextCenteredOnArea(_boardOffsetX, boardWidth, titleY, UiConfig.GameTitle, UiConfig.TitleScale);
         }
         
-        private void DrawScore(string scoreStr, int boardWidth, int boardHeight)
+        private void DrawInfoPanel(int level, int linesCleared, int linesNeeded, int score, string scoreStr,
+            int boardWidth, int boardHeight)
         {
-            float scoreX = _boardOffsetX + boardWidth + 30;
-            float scoreY = _boardOffsetY + boardHeight - 30;
-            _fontRenderer.DrawText(scoreX, scoreY, UiConfig.ScoreLabel, UiConfig.TitleScale);
-            _fontRenderer.DrawText(scoreX, scoreY - 50, scoreStr, UiConfig.TitleScale);
+            float infoX = _boardOffsetX + boardWidth + 30;
+            float infoY = _boardOffsetY + boardHeight - 30;
+            
+            _fontRenderer.DrawText(infoX, infoY, UiConfig.LevelLabel, UiConfig.HeaderScale);
+            _fontRenderer.DrawText(infoX, infoY - 35, level.ToString(), UiConfig.HeaderScale);
+            
+            infoY -= 90;
+            _fontRenderer.DrawText(infoX, infoY, UiConfig.LinesLabel, UiConfig.HeaderScale);
+            _fontRenderer.DrawText(infoX, infoY - 35, $"{linesCleared}/{linesNeeded}", UiConfig.HeaderScale);
+            
+            infoY -= 90;
+            _fontRenderer.DrawText(infoX, infoY, UiConfig.ScoreLabel, UiConfig.HeaderScale);
+            _fontRenderer.DrawText(infoX, infoY - 35, scoreStr, UiConfig.HeaderScale);
+        }
+        
+        private void DrawNextPiecePreview(ShapeType nextShapeType, int nextShapeColor, int boardWidth, int boardHeight)
+        {
+            float previewX = _boardOffsetX + boardWidth + 30;
+            float previewY = _boardOffsetY + boardHeight - 320;
+            
+            _fontRenderer.DrawText(previewX, previewY, UiConfig.NextLabel, UiConfig.HeaderScale);
+            
+            int[,] blocks = Shape.GetPreviewBlocks(nextShapeType);
+            int previewCellSize = 20;
+            float offsetX = previewX;
+            float offsetY = previewY - 60;
+            
+            DrawPreviewBlocks(blocks, offsetX, offsetY, previewCellSize, nextShapeColor);
+        }
+        
+        private void DrawPreviewBlocks(int[,] blocks, float offsetX, float offsetY, int cellSize, int colorIndex)
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                float x = offsetX + blocks[i, 0] * cellSize;
+                float y = offsetY - blocks[i, 1] * cellSize;
+                DrawPreviewCell(x, y, cellSize, colorIndex);
+            }
+        }
+        
+        private void DrawPreviewCell(float x, float y, int size, int colorIndex)
+        {
+            if (colorIndex < 0 || colorIndex >= 8)
+            {
+                colorIndex = 0;
+            }
+            
+            float r = _colors[colorIndex, 0];
+            float g = _colors[colorIndex, 1];
+            float b = _colors[colorIndex, 2];
+            
+            GL.Color4(r, g, b, 1.0f);
+            GL.Begin(PrimitiveType.Quads);
+            GL.Vertex2(x, y);
+            GL.Vertex2(x + size, y);
+            GL.Vertex2(x + size, y + size);
+            GL.Vertex2(x, y + size);
+            GL.End();
         }
         
         private void DrawControls(int boardHeight)
@@ -173,8 +234,8 @@ namespace Task3
             controlsY -= 40;
             foreach (string instruction in UiConfig.ControlInstructions)
             {
-                _fontRenderer.DrawText(controlsX, controlsY, instruction, 1.2f);
-                controlsY -= 35;
+                _fontRenderer.DrawText(controlsX, controlsY, instruction, UiConfig.SmallScale);
+                controlsY -= 25;
             }
         }
         
@@ -192,6 +253,20 @@ namespace Task3
             _fontRenderer.DrawTextCenteredOnArea(_boardOffsetX, boardWidth, boardCenterY + 60, UiConfig.GameOverText, UiConfig.TitleScale);
             _fontRenderer.DrawTextCenteredOnArea(_boardOffsetX, boardWidth, boardCenterY, $"{UiConfig.FinalScoreText}{score}", UiConfig.HeaderScale);
             _fontRenderer.DrawTextCenteredOnArea(_boardOffsetX, boardWidth, boardCenterY - 50, UiConfig.RestartPrompt, UiConfig.HeaderScale);
+        }
+        
+        private void DrawPauseOverlay(int boardWidth, int boardHeight)
+        {
+            GL.Color4(0.0f, 0.0f, 0.0f, 0.6f);
+            GL.Begin(PrimitiveType.Quads);
+            GL.Vertex2(0, 0);
+            GL.Vertex2(_windowWidth, 0);
+            GL.Vertex2(_windowWidth, _windowHeight);
+            GL.Vertex2(0, _windowHeight);
+            GL.End();
+            
+            float boardCenterY = _boardOffsetY + boardHeight / 2.0f;
+            _fontRenderer.DrawTextCenteredOnArea(_boardOffsetX, boardWidth, boardCenterY, UiConfig.PauseText, UiConfig.TitleScale);
         }
         
         private void DrawSquare(float x, float y, float size, int colorIndex)

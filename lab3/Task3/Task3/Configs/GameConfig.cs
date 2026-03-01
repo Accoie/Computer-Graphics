@@ -4,13 +4,20 @@ namespace Task3.Configs
     {
         public const int WindowWidth = 800;
         public const int WindowHeight = 600;
-        public const string WindowTitle = "Tetris";
+        public const string WindowTitle = "Tetris Game - OpenTK 4.x";
         
         public const int CellSize = 24;
         
-        public const double FallInterval = 1.0;
+        public const double BaseFallInterval = 1.0;
+        public const double FallIntervalDecrease = 0.1;
+        public const double MinFallInterval = 0.1;
         public const double FastDropSpeed = 30.0;
-        public const int PointsPerLine = 100;
+        
+        public static readonly int[] LineScores = { 0, 10, 30, 70, 150 };
+        
+        public const int BaseLinesPerLevel = 5;
+        public const int LinesPerLevelIncrease = 2;
+        public const int EmptyLineBonus = 10;
         
         public static readonly float[,] BlockColors = new[,]
         {
