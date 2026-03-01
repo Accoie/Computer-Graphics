@@ -1,7 +1,8 @@
 using OpenTK.Graphics.OpenGL;
 using Task3.Configs;
+using Task3.Models;
 
-namespace Task3
+namespace Task3.Render
 {
     public class Renderer
     {

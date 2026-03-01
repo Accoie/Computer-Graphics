@@ -4,6 +4,9 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using OpenTK.Graphics.OpenGL;
 using Task3.Configs;
+using Task3.Input;
+using Task3.Models;
+using Task3.Render;
 
 namespace Task3
 {

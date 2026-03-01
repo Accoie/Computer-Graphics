@@ -1,6 +1,6 @@
 using OpenTK.Windowing.GraphicsLibraryFramework;
 
-namespace Task3
+namespace Task3.Input
 {
     public class InputHandler
     {

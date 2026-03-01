@@ -1,6 +1,6 @@
 using OpenTK.Graphics.OpenGL;
 
-namespace Task3
+namespace Task3.Render
 {
     public class FontRenderer
     {
