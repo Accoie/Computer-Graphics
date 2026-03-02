@@ -4,50 +4,52 @@ namespace Task3.Rendering
 {
     public class FontRenderer
     {
-        private const int GlyphSize = 8;
+        private const int CharacterSize = 8;
+        private const int CharGap = 2;
+        private const int LineGap = 4;
         
         public void DrawText(float x, float y, string text, float scale = 1.0f)
         {
-            float charWidth = GlyphSize * scale;
-            float charHeight = GlyphSize * scale;
+            float charWidth = CharacterSize * scale;
+            float charHeight = CharacterSize * scale;
             float startX = x;
             
             foreach (char c in text.ToUpper())
             {
                 if (c == '\n')
                 {
-                    y -= charHeight + 4 * scale;
+                    y -= charHeight + LineGap * scale;
                     x = startX;
                     
                     continue;
                 }
                 
                 DrawCharacter(x, y, c, scale);
-                x += charWidth + 2 * scale;
+                x += charWidth + CharGap * scale;
             }
         }
 
         public void DrawTextCenteredOnArea(float areaX, float areaWidth, float y, string text, float scale = 1.0f)
         {
-            float textWidth = MeasureText(text, scale);
+            float textWidth = MeasureTextWidth(text, scale);
             float x = areaX + (areaWidth - textWidth) / 2.0f;
             DrawText(x, y, text, scale);
         }
 
-        private float MeasureText(string text, float scale = 1.0f)
+        private float MeasureTextWidth(string text, float scale = 1.0f)
         {
-            float charWidth = GlyphSize * scale + 2 * scale;
+            float charWidth = CharacterSize * scale + CharGap * scale;
             
             return text.Length * charWidth;
         }
         
         private void DrawCharacter(float x, float y, char c, float scale)
         {
-            byte[] bitmap = BitmapFont.GetGlyph(c);
+            byte[] bitmap = BitmapFont.GetCharacter(c);
             
-            for (int row = 0; row < GlyphSize; row++)
+            for (int row = 0; row < CharacterSize; row++)
             {
-                for (int col = 0; col < GlyphSize; col++)
+                for (int col = 0; col < CharacterSize; col++)
                 {
                     if (IsPixelSet(bitmap, row, col))
                     {
@@ -57,9 +59,9 @@ namespace Task3.Rendering
             }
         }
         
-        private bool IsPixelSet(byte[] bitmap, int row, int col)
+        private static bool IsPixelSet(byte[] bitmap, int row, int col)
         {
-            return (bitmap[row] & (1 << (GlyphSize - 1 - col))) != 0;
+            return (bitmap[row] & (1 << (CharacterSize - 1 - col))) != 0;
         }
         
         private void DrawPixel(float x, float y, int row, int col, float scale)

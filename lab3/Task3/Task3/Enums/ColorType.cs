@@ -1,13 +1,12 @@
-﻿namespace Task3.Enums;
+namespace Task3.Enums;
 
 public enum ColorType
 {
     Empty = 0,
-    Reserved = 1,
-    Red = 2,
-    Yellow = 3,
-    Blue = 4,
-    Green = 5,
-    Orange = 6,
-    Purple = 7
+    Red = 1,
+    Yellow = 2,
+    Blue = 3,
+    Green = 4,
+    Orange = 5,
+    Purple = 6
 }

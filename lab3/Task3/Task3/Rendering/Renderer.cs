@@ -8,7 +8,7 @@ namespace Task3.Rendering
 {
     public class Renderer
     {
-        private readonly int _cellSize = GameConfig.CellSize;
+        private const int CellSize = GameConfig.CellSize;
         private int _fieldOffsetX;
         private int _fieldOffsetY;
         private int _windowWidth;
@@ -26,21 +26,21 @@ namespace Task3.Rendering
         {
             _windowWidth = width;
             _windowHeight = height;
-            _fieldOffsetX = (width - Field.Width * _cellSize) / 2;
-            _fieldOffsetY = (height - Field.Height * _cellSize) / 2;
+            _fieldOffsetX = (width - Field.Width * CellSize) / 2;
+            _fieldOffsetY = (height - Field.Height * CellSize) / 2;
         }
         
         public void Initialize()
         {
-            GL.ClearColor(0.05f, 0.05f, 0.1f, 1.0f);
+            GL.ClearColor(0.15f, 0.10f, 0.1f, 1.0f);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
         }
         
         public void DrawField(Field field, Shape currentShape)
         {
-            int fieldWidth = Field.Width * _cellSize;
-            int fieldHeight = Field.Height * _cellSize;
+            int fieldWidth = Field.Width * CellSize;
+            int fieldHeight = Field.Height * CellSize;
             
             DrawFieldBackground(fieldWidth, fieldHeight);
             DrawPlacedCells(field);
@@ -89,9 +89,9 @@ namespace Task3.Rendering
         
         private void DrawCell(int x, int y, ColorType colorType)
         {
-            float drawX = _fieldOffsetX + x * _cellSize;
-            float drawY = _fieldOffsetY + (Field.Height - 1 - y) * _cellSize;
-            DrawSquare(drawX, drawY, _cellSize - 1, colorType);
+            float drawX = _fieldOffsetX + x * CellSize;
+            float drawY = _fieldOffsetY + (Field.Height - 1 - y) * CellSize;
+            DrawSquare(drawX, drawY, CellSize - 1, colorType);
         }
         
         private void DrawFieldBorder(int fieldWidth, int fieldHeight)
@@ -118,7 +118,7 @@ namespace Task3.Rendering
         {
             for (int i = 1; i < Field.Width; i++)
             {
-                float lineX = _fieldOffsetX + i * _cellSize;
+                float lineX = _fieldOffsetX + i * CellSize;
                 GL.Begin(PrimitiveType.Lines);
                 GL.Vertex2(lineX, _fieldOffsetY);
                 GL.Vertex2(lineX, _fieldOffsetY + fieldHeight);
@@ -130,7 +130,7 @@ namespace Task3.Rendering
         {
             for (int i = 1; i < Field.Height; i++)
             {
-                float lineY = _fieldOffsetY + i * _cellSize;
+                float lineY = _fieldOffsetY + i * CellSize;
                 GL.Begin(PrimitiveType.Lines);
                 GL.Vertex2(_fieldOffsetX, lineY);
                 GL.Vertex2(_fieldOffsetX + fieldWidth, lineY);
@@ -140,15 +140,15 @@ namespace Task3.Rendering
         
         public void DrawUi(UiState uiState)
         {
-            int fieldWidth = Field.Width * _cellSize;
-            int fieldHeight = Field.Height * _cellSize;
+            int fieldWidth = Field.Width * CellSize;
+            int fieldHeight = Field.Height * CellSize;
             
             DrawTitle(fieldWidth, fieldHeight);
             DrawInfoPanel(uiState.Level, uiState.LinesCleared, uiState.LinesNeeded, uiState.ScoreString, fieldWidth, fieldHeight);
             
             if (uiState.NextShape is not null)
             {
-                DrawNextPiecePreview(uiState.NextShape.ShapeType, uiState.NextShape.Color, fieldWidth, fieldHeight);
+                DrawNextPiecePreview(uiState.NextShape, fieldWidth, fieldHeight);
             }
             
             DrawControls(fieldHeight);
@@ -187,28 +187,28 @@ namespace Task3.Rendering
             _fontRenderer.DrawText(infoX, infoY - 35, scoreStr, UiConfig.HeaderScale);
         }
         
-        private void DrawNextPiecePreview(ShapeType nextShapeType, ColorType nextColorType, int fieldWidth, int fieldHeight)
+        private void DrawNextPiecePreview(Shape nextShape, int fieldWidth, int fieldHeight)
         {
             float previewX = _fieldOffsetX + fieldWidth + 30;
             float previewY = _fieldOffsetY + fieldHeight - 320;
             
             _fontRenderer.DrawText(previewX, previewY, UiConfig.NextLabel, UiConfig.HeaderScale);
             
-            Block[] blocks = Shape.GetPreviewBlocks(nextShapeType);
-            int previewCellSize = 20;
-            float offsetX = previewX;
+            float offsetX = previewX - 70;
             float offsetY = previewY - 60;
             
-            DrawPreviewBlocks(blocks, offsetX, offsetY, previewCellSize, nextColorType);
+            DrawPreviewBlocks(nextShape, offsetX, offsetY);
         }
         
-        private void DrawPreviewBlocks(Block[] blocks, float offsetX, float offsetY, int cellSize, ColorType colorType)
+        private void DrawPreviewBlocks(Shape shape, float offsetX, float offsetY)
         {
+            int сellSize = 20;
+            
             for (int i = 0; i < 4; i++)
             {
-                float x = offsetX + blocks[i].X * cellSize;
-                float y = offsetY - blocks[i].Y * cellSize;
-                DrawPreviewCell(x, y, cellSize, colorType);
+                float x = offsetX + shape[i].X * сellSize;
+                float y = offsetY - shape[i].Y * сellSize;
+                DrawPreviewCell(x, y, сellSize, shape.Color);
             }
         }
         
@@ -227,10 +227,12 @@ namespace Task3.Rendering
         
         private void DrawControls(int fieldHeight)
         {
-            float controlsX = _fieldOffsetX - 250;
+            float controlsX = _fieldOffsetX - 220;
             float controlsY = _fieldOffsetY + fieldHeight - 30;
+            
             _fontRenderer.DrawText(controlsX, controlsY, UiConfig.ControlsHeader, UiConfig.HeaderScale);
             controlsY -= 40;
+            
             foreach (string instruction in UiConfig.ControlInstructions)
             {
                 _fontRenderer.DrawText(controlsX, controlsY, instruction);

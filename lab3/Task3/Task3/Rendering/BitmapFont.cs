@@ -55,9 +55,9 @@ namespace Task3.Rendering
             ['_'] = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7E, 0x00],
         };
 
-        public static byte[] GetGlyph(char c)
+        public static byte[] GetCharacter(char c)
         {
-            return Characters.TryGetValue(c, out var glyph) ? glyph : Characters[' '];
+            return Characters.TryGetValue(c, out byte[]? character) ? character : Characters[' '];
         }
     }
 }

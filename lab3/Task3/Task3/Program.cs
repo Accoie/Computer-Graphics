@@ -4,7 +4,7 @@ namespace Task3
     {
         public static void Main()
         {
-            var game = new TetrisGame();
+            TetrisGame game = new TetrisGame();
             game.Run();
         }
     }

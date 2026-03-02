@@ -18,7 +18,7 @@ namespace Task3.Configs
         public const double MinFallInterval = 0.1;
         public const double FastDropSpeed = 30.0;
         
-        public static readonly int[] LineScores = { 0, 10, 30, 70, 150 };
+        public static readonly int[] LineScores = [0, 10, 30, 70, 150];
         
         public const int BaseLinesPerLevel = 5;
         public const int LinesPerLevelIncrease = 2;
@@ -27,7 +27,6 @@ namespace Task3.Configs
         public static readonly Dictionary<ColorType, Color4> CellColors = new()
         {
             { ColorType.Empty, new Color4(0.2f, 0.2f, 0.2f, 1.0f) },
-            { ColorType.Reserved, new Color4(0.8f, 0.8f, 0.8f, 1.0f) },
             { ColorType.Red, new Color4(1.0f, 0.0f, 0.0f, 1.0f) },
             { ColorType.Yellow, new Color4(1.0f, 1.0f, 0.0f, 1.0f) },
             { ColorType.Blue, new Color4(0.0f, 0.5f, 1.0f, 1.0f) },

@@ -11,17 +11,11 @@ namespace Task3.Models
         BlockT,
     }
 
-    public readonly struct Block
+    public readonly struct Block(int x, int y)
     {
-        public int X { get; init; }
-        public int Y { get; init; }
-        
-        public Block(int x, int y)
-        {
-            X = x;
-            Y = y;
-        }
-        
+        public int X { get; } = x;
+        public int Y { get; } = y;
+
         public Block Shift(int dx, int dy) => new Block(X + dx, Y + dy);
     }
 
@@ -38,21 +32,24 @@ namespace Task3.Models
 
         public Block this[int blockIndex] => _blocks[blockIndex];
         public ColorType Color => _color;
-        public ShapeType ShapeType => _shapeType;
 
         public void SpawnNew()
         {
             _shapeType = AllShapeTypes[Rand.Next(AllShapeTypes.Length)];
-            _color = (ColorType)(Rand.Next(6) + 2);
+            _color = GetRandomColorType();
             SetInitialBlocks();
         }
 
         public static Shape GenerateNextShape()
         {
-            var shape = new Shape();
-            shape._shapeType = AllShapeTypes[Rand.Next(AllShapeTypes.Length)];
-            shape._color = (ColorType)(Rand.Next(6) + 2);
+            Shape shape = new Shape
+            {
+                _shapeType = AllShapeTypes[Rand.Next(AllShapeTypes.Length)],
+                _color = GetRandomColorType()
+            };
+            
             shape.SetInitialBlocks();
+            
             return shape;
         }
 
@@ -61,34 +58,6 @@ namespace Task3.Models
             _shapeType = nextShape._shapeType;
             _color = nextShape._color;
             SetInitialBlocks();
-        }
-
-        public static Block[] GetPreviewBlocks(ShapeType type)
-        {
-            return type switch
-            {
-                ShapeType.Line => new Block[]
-                {
-                    new Block(0, 0), new Block(1, 0), new Block(2, 0), new Block(3, 0)
-                },
-                ShapeType.Square => new Block[]
-                {
-                    new Block(0, 0), new Block(1, 0), new Block(0, 1), new Block(1, 1)
-                },
-                ShapeType.BlockL => new Block[]
-                {
-                    new Block(0, 0), new Block(1, 0), new Block(2, 0), new Block(2, 1)
-                },
-                ShapeType.ZigZag => new Block[]
-                {
-                    new Block(1, 0), new Block(2, 0), new Block(0, 1), new Block(1, 1)
-                },
-                ShapeType.BlockT => new Block[]
-                {
-                    new Block(0, 0), new Block(1, 0), new Block(2, 0), new Block(1, 1)
-                },
-                _ => throw new ArgumentOutOfRangeException(nameof(type))
-            };
         }
 
         public bool CheckCollisionWithField(Field field)
@@ -155,18 +124,6 @@ namespace Task3.Models
             TryWallKicks(field, temp);
         }
 
-        public bool FastDrop(Field field)
-        {
-            if (!CanMoveDown(field))
-            {
-                PlaceOnField(field);
-                return true;
-            }
-
-            ShiftBlocks(dx: 0, dy: 1);
-            return false;
-        }
-
         private void SetInitialBlocks()
         {
             switch (_shapeType)
@@ -186,6 +143,8 @@ namespace Task3.Models
                 case ShapeType.BlockT:
                     SetBlockTShape();
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -289,7 +248,7 @@ namespace Task3.Models
 
         private Block[] CopyBlocks()
         {
-            var copy = new Block[BlockCount];
+            Block[] copy = new Block[BlockCount];
             for (int i = 0; i < BlockCount; i++)
             {
                 copy[i] = _blocks[i];
@@ -398,6 +357,11 @@ namespace Task3.Models
             {
                 _blocks[i] = temp[i];
             }
+        }
+        
+        private static ColorType GetRandomColorType()
+        {
+            return (ColorType)Rand.Next(1, 7);
         }
     }
 }

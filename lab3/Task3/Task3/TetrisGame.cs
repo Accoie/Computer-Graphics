@@ -115,7 +115,7 @@ namespace Task3
         {
             base.OnUpdateFrame(e);
 
-            var keyBoard = KeyboardState;
+            KeyboardState? keyBoard = KeyboardState;
             _inputHandler.Update(keyBoard);
 
             HandleSystemInput(keyBoard);
@@ -158,8 +158,8 @@ namespace Task3
                 while (_fastDropTimer >= dropInterval)
                 {
                     _fastDropTimer -= dropInterval;
-                    bool landed = _currentShape.FastDrop(_field);
-                    if (landed)
+                    bool canMoveDown = _currentShape.TryMoveDown(_field);
+                    if (!canMoveDown)
                     {
                         HandleShapeLanded();
                         _fastDropTimer = 0;

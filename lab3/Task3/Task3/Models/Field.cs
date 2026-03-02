@@ -39,7 +39,7 @@ namespace Task3.Models
                 return false;
             }
             
-            return _cells[x, y] >= ColorType.Red;
+            return _cells[x, y] != ColorType.Empty;
         }
         
         public int RemoveCompleteLines()
@@ -66,7 +66,7 @@ namespace Task3.Models
         {
             for (int x = 0; x < Width; x++)
             {
-                if (_cells[x, lineNumber] < ColorType.Red)
+                if (_cells[x, lineNumber] == ColorType.Empty)
                 {
                     return false;
                 }
