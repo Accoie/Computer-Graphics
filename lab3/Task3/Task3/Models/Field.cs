@@ -1,13 +1,17 @@
+using Task3.Enums;
+
 namespace Task3.Models
 {
-    public class Board
+
+
+    public class Field
     {
         public const int Width = 10;
         public const int Height = 20;
         
-        private readonly int[,] _cells = new int[Width, Height];
+        private readonly ColorType[,] _cells = new ColorType[Width, Height];
         
-        public int this[int x, int y]
+        public ColorType this[int x, int y]
         {
             get => _cells[x, y];
             set => _cells[x, y] = value;
@@ -19,7 +23,7 @@ namespace Task3.Models
             {
                 for (int j = 0; j < Height; j++)
                 {
-                    _cells[i, j] = 0;
+                    _cells[i, j] = ColorType.Empty;
                 }
             }
         }
@@ -35,7 +39,7 @@ namespace Task3.Models
                 return false;
             }
             
-            return _cells[x, y] >= 2;
+            return _cells[x, y] >= ColorType.Red;
         }
         
         public int RemoveCompleteLines()
@@ -60,18 +64,15 @@ namespace Task3.Models
 
         private bool CheckLineCompletion(int lineNumber)
         {
-            bool complete = true;
             for (int x = 0; x < Width; x++)
             {
-                if (_cells[x, lineNumber] < 2)
+                if (_cells[x, lineNumber] < ColorType.Red)
                 {
-                    complete = false;
-                    
-                    break;
+                    return false;
                 }
             }
             
-            return complete;
+            return true;
         }
 
         private void ShiftLinesDown(int startLine)
@@ -89,7 +90,7 @@ namespace Task3.Models
         {
             for (int x = 0; x < Width; x++)
             {
-                _cells[x, 0] = 0;
+                _cells[x, 0] = ColorType.Empty;
             }
         }
     }

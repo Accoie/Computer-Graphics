@@ -4,8 +4,7 @@ namespace Task3.Configs
     {
         public const float TitleScale = 2.5f;
         public const float HeaderScale = 1.5f;
-        public const float SmallScale = 1.0f;
-        
+
         public const string GameTitle = "TETRIS";
         public const string LevelLabel = "LEVEL";
         public const string LinesLabel = "LINES";

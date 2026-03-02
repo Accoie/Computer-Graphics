@@ -1,4 +1,4 @@
-namespace Task3.Render
+namespace Task3.Rendering
 {
     public static class BitmapFont
     {

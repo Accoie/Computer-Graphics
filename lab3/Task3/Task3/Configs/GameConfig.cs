@@ -1,5 +1,10 @@
+using Task3.Enums;
+
 namespace Task3.Configs
 {
+    using Task3.Models;
+    using OpenTK.Mathematics;
+
     public static class GameConfig
     {
         public const int WindowWidth = 800;
@@ -19,16 +24,16 @@ namespace Task3.Configs
         public const int LinesPerLevelIncrease = 2;
         public const int EmptyLineBonus = 10;
         
-        public static readonly float[,] BlockColors = new[,]
+        public static readonly Dictionary<ColorType, Color4> CellColors = new()
         {
-            {0.2f, 0.2f, 0.2f},
-            {0.8f, 0.8f, 0.8f},
-            {1.0f, 0.0f, 0.0f},
-            {1.0f, 1.0f, 0.0f},
-            {0.0f, 0.5f, 1.0f},
-            {0.0f, 0.8f, 0.4f},
-            {1.0f, 0.5f, 0.0f},
-            {1.0f, 0.0f, 1.0f}
+            { ColorType.Empty, new Color4(0.2f, 0.2f, 0.2f, 1.0f) },
+            { ColorType.Reserved, new Color4(0.8f, 0.8f, 0.8f, 1.0f) },
+            { ColorType.Red, new Color4(1.0f, 0.0f, 0.0f, 1.0f) },
+            { ColorType.Yellow, new Color4(1.0f, 1.0f, 0.0f, 1.0f) },
+            { ColorType.Blue, new Color4(0.0f, 0.5f, 1.0f, 1.0f) },
+            { ColorType.Green, new Color4(0.0f, 0.8f, 0.4f, 1.0f) },
+            { ColorType.Orange, new Color4(1.0f, 0.5f, 0.0f, 1.0f) },
+            { ColorType.Purple, new Color4(1.0f, 0.0f, 1.0f, 1.0f) }
         };
         
         public const float GameOverOverlayAlpha = 0.8f;
