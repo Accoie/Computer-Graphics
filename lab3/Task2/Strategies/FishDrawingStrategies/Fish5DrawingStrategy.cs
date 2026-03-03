@@ -1,56 +1,55 @@
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
-using Task2.Components;
+using Task2.Tools;
 
 namespace Task2.Strategies.FishDrawingStrategies;
 
-public class Fish5DrawingStrategy : IDrawingStrategy<Fish>
+public class Fish5DrawingStrategy : FishDrawingStrategy
 {
-    public void Draw(Fish fish)
+    public override void DrawBody(float x, float y, float rx, float ry)
     {
-        float x = fish.Position.X;
-        float y = fish.Position.Y;
-        float rx = fish.Size.X;
-        float ry = fish.Size.Y;
+        DrawingTools.DrawEllipse(x, y, rx, ry, new Color4(0.97f, 0.08f, 0.78f, 1.0f));
+        
+        DrawPectoralFins(x, y, rx);
+    }
 
-        GL.PushMatrix();
-        GL.Translate(-fish.Offset, 0.0f, 0.0f);
-
-        DrawEllipse(x, y, rx, ry, new Color4(0.97f, 0.08f, 0.78f, 1.0f));
-
+    public override void DrawTail(float x, float y, float rx)
+    {
         GL.Begin(PrimitiveType.Polygon);
         GL.Color3(0.97f, 0.08f, 0.78f);
         GL.Vertex2(x + rx, y);
+        
         GL.Color3(0.0f, 0.0f, 1f);
         GL.Vertex2(x + rx + 50, y + 50);
-        GL.Color3(0.0f, 0.0f, 1f);
         GL.Vertex2(x + rx + 100.0f, y + 20.0f);
         GL.Vertex2(x + rx + 70.0f, y);
         GL.Vertex2(x + rx + 100.0f, y - 20.0f);
-        GL.Color3(0.0f, 0.0f, 1f);
         GL.Vertex2(x + rx + 50, y - 50);
-        GL.Color3(0.0f, 0.0f, 1f);
+        
+        GL.Color3(0.97f, 0.08f, 0.78f);
         GL.Vertex2(x + rx, y);
         GL.End();
-
-        DrawEllipse(x - 50, y + 20.0f, ry / 2, ry / 2, Color4.White);
-        DrawEllipse(x - 40.0f, y + 30.0f, ry / 4, ry / 4, Color4.Black);
-
-        GL.PopMatrix();
     }
 
-    private void DrawEllipse(float x, float y, float radiusX, float radiusY, Color4 color, PrimitiveType primitiveType = PrimitiveType.Polygon)
+    public override void DrawEye(float x, float y)
     {
-        GL.Begin(primitiveType);
-        GL.Color4(color);
-
-        int segments = 360;
-
-        for (int i = 0; i < segments; i++)
-        {
-            float degInRad = i * (float)Math.PI / 180;
-            GL.Vertex2(x + Math.Cos(degInRad) * radiusX, y + Math.Sin(degInRad) * radiusY);
-        }
+        float eyeX = x - 50;
+        float eyeY = y + 20.0f;
+        float ry = Fish.Size.Y; 
+        
+        DrawingTools.DrawEllipse(eyeX, eyeY, ry / 2, ry / 2, Color4.White);
+        DrawingTools.DrawEllipse(x - 40.0f, y + 30.0f, ry / 4, ry / 4, Color4.Black);
+    }
+    
+    private void DrawPectoralFins(float x, float y, float rx)
+    {
+        GL.Begin(PrimitiveType.Triangles);
+        GL.Color3(0.0f, 0.0f, 0.8f);
+        
+        GL.Vertex2(x + 10 , y + 20);
+        GL.Vertex2(x + 40, y);
+        GL.Vertex2(x + 10, y - 20);
+        
         GL.End();
     }
 }

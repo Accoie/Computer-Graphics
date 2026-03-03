@@ -7,31 +7,31 @@ namespace Task2
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
-        private bool _isDragging = false;
+        private bool _isDragging;
         private Point _lastMousePosition;
-        private TranslateTransform _transform;
+        private readonly TranslateTransform _transform;
 
         public MainWindow()
         {
             InitializeComponent();
 
             _transform = new TranslateTransform();
-            sceneContainer.RenderTransform = _transform;
+            SceneContainer.RenderTransform = _transform;
         }
 
         private void SceneContainer_MouseLeftButtonDown( object sender, MouseButtonEventArgs e )
         {
             _isDragging = true;
             _lastMousePosition = e.GetPosition( this );
-            sceneContainer.CaptureMouse();
+            SceneContainer.CaptureMouse();
             Cursor = Cursors.SizeAll;
         }
 
         private void SceneContainer_MouseMove( object sender, MouseEventArgs e )
         {
-            if ( _isDragging && sceneContainer.IsMouseCaptured )
+            if ( _isDragging && SceneContainer.IsMouseCaptured )
             {
                 Point currentMousePosition = e.GetPosition( this );
                 double deltaX = currentMousePosition.X - _lastMousePosition.X;
@@ -47,7 +47,7 @@ namespace Task2
         private void SceneContainer_MouseLeftButtonUp( object sender, MouseButtonEventArgs e )
         {
             _isDragging = false;
-            sceneContainer.ReleaseMouseCapture();
+            SceneContainer.ReleaseMouseCapture();
             Cursor = Cursors.Arrow;
         }
     }

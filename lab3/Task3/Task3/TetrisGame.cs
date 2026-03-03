@@ -22,7 +22,7 @@ namespace Task3
         private int _score;
         private string _scoreStr = "0";
 
-        private int _level = 1;
+        private int _level = 10;
         private int _linesCleared;
         private int _linesNeeded;
 

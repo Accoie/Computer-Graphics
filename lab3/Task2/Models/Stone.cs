@@ -1,7 +1,7 @@
 ﻿using OpenTK.Mathematics;
 using Task2.Strategies;
 
-namespace Task2.Components;
+namespace Task2.Models;
 
 public class Stone
 {

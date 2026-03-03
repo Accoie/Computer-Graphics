@@ -1,6 +1,6 @@
 ﻿using OpenTK.Mathematics;
 
-namespace Task2.Components;
+namespace Task2.Models;
 
 public class Bubble(Vector2 position, Vector2 speed, Vector2 direction, float size = 8.0f)
 {

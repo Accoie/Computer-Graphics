@@ -5,7 +5,7 @@
         Background="#F0F0F0" ResizeMode="NoResize">
 
     <Grid>
-        <Canvas x:Name="sceneContainer" 
+        <Canvas x:Name="SceneContainer" 
                 Width="800" Height="600"
                 Background="Transparent"
                 MouseLeftButtonDown="SceneContainer_MouseLeftButtonDown"

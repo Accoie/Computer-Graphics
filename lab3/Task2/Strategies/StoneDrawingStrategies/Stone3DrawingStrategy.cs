@@ -1,5 +1,5 @@
 using OpenTK.Graphics.OpenGL;
-using Task2.Components;
+using Task2.Models;
 
 namespace Task2.Strategies.StoneDrawingStrategies;
 

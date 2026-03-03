@@ -157,6 +157,8 @@ namespace Task2
             }
 
             Point currentPoint = e.GetPosition( DrawingCanvas );
+            Console.WriteLine(currentPoint.X);
+            Console.WriteLine(currentPoint.Y);
             ProcessDrawingMove( currentPoint );
             e.Handled = true;
         }
@@ -169,6 +171,8 @@ namespace Task2
             }
 
             Point currentPoint = e.GetPosition( DrawingCanvas );
+
+            
             ProcessDrawingMove( currentPoint );
         }
 

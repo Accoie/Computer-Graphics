@@ -1,10 +1,12 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Task1;
 
-public class BezierGameWindow : GameWindow
+public class BezierGameWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
+    : GameWindow(gameWindowSettings, nativeWindowSettings)
 {
     private const float MinX = -4.0f;
     private const float MaxX = 4.0f;
@@ -19,11 +21,6 @@ public class BezierGameWindow : GameWindow
         new Point(2.0f, -1.0f),
         new Point(2.0f, 2.0f)
     ];
-
-    public BezierGameWindow( GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings )
-        : base( gameWindowSettings, nativeWindowSettings )
-    {
-    }
 
     protected override void OnLoad()
     {
@@ -55,7 +52,7 @@ public class BezierGameWindow : GameWindow
     {
         base.OnUpdateFrame( args );
 
-        if ( KeyboardState.IsKeyDown( OpenTK.Windowing.GraphicsLibraryFramework.Keys.Escape ) )
+        if ( KeyboardState.IsKeyDown( Keys.Escape ) )
         {
             Close();
         }
@@ -83,9 +80,6 @@ public class BezierGameWindow : GameWindow
         {
             GL.Ortho( MinX / aspect, MaxX / aspect, MinY / aspect, MaxY / aspect, -1, 1 );
         }
-
-        GL.MatrixMode( MatrixMode.Modelview );
-        GL.LoadIdentity();
     }
     
     private void DrawBezierCurve()
