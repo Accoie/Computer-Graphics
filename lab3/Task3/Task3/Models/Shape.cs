@@ -2,23 +2,6 @@ using Task3.Enums;
 
 namespace Task3.Models
 {
-    public enum ShapeType
-    {
-        Line,
-        Square,
-        BlockL,
-        ZigZag,
-        BlockT,
-    }
-
-    public readonly struct Block(int x, int y)
-    {
-        public int X { get; } = x;
-        public int Y { get; } = y;
-
-        public Block Shift(int dx, int dy) => new Block(X + dx, Y + dy);
-    }
-
     public class Shape
     {
         private const int BlockCount = 4;
@@ -80,16 +63,18 @@ namespace Task3.Models
             if (!CanMoveDown(field))
             {
                 PlaceOnField(field);
+                
                 return false;
             }
 
             ShiftBlocks(dx: 0, dy: 1);
+            
             return true;
         }
 
         public void MoveRight(Field field)
         {
-            if (CanMoveHorizontally(field, 1))
+            if (CanMoveHorizontally(field, dx: 1))
             {
                 ShiftBlocks(dx: 1, dy: 0);
             }
@@ -97,7 +82,7 @@ namespace Task3.Models
 
         public void MoveLeft(Field field)
         {
-            if (CanMoveHorizontally(field, -1))
+            if (CanMoveHorizontally(field, dx: -1))
             {
                 ShiftBlocks(dx: -1, dy: 0);
             }

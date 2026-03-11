@@ -1,13 +1,7 @@
 ﻿namespace Task1;
 
-public class Point
+public class Point(float x, float y)
 {
-    public float X { get; set; }
-    public float Y { get; set; }
-
-    public Point( float x, float y )
-    {
-        X = x;
-        Y = y;
-    }
+    public float X { get; } = x;
+    public float Y { get; } = y;
 }

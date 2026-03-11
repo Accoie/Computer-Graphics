@@ -14,12 +14,12 @@ public class BezierGameWindow(GameWindowSettings gameWindowSettings, NativeWindo
     private const float MaxY = 4.0f;
     private const float Step = 0.02f;
 
-    private readonly Point[] _bezierPoints =
+    private readonly Point[] _bezierPoints = // какого порядка прямая
     [
-        new Point(-2.0f, 1.5f),
-        new Point(1.0f, 3.5f),
-        new Point(2.0f, -1.0f),
-        new Point(2.0f, 2.0f)
+        new(-2.0f, 1.5f),
+        new(1.0f, 3.5f),
+        new(2.0f, -1.0f),
+        new(2.0f, 2.0f)
     ];
 
     protected override void OnLoad()
@@ -125,7 +125,7 @@ public class BezierGameWindow(GameWindowSettings gameWindowSettings, NativeWindo
         GL.Begin( PrimitiveType.Points );
         GL.Color3( 0.0f, 0.5f, 0.9f );
 
-        foreach ( var point in _bezierPoints )
+        foreach ( Point point in _bezierPoints )
         {
             GL.Vertex2( point.X, point.Y );
         }
@@ -147,6 +147,7 @@ public class BezierGameWindow(GameWindowSettings gameWindowSettings, NativeWindo
             GL.Vertex2( _bezierPoints[ i ].X, _bezierPoints[ i ].Y );
             GL.Vertex2( _bezierPoints[ i + 1 ].X, _bezierPoints[ i + 1 ].Y );
         }
+        
         GL.End();
 
         GL.Disable( EnableCap.LineStipple );

@@ -2,7 +2,7 @@ namespace Task3.Rendering
 {
     public static class BitmapFont
     {
-        public static readonly Dictionary<char, byte[]> Characters = new()
+        private static readonly Dictionary<char, byte[]> Characters = new()
         {
             ['A'] = [0x18, 0x3C, 0x66, 0x7E, 0x66, 0x66, 0x66, 0x00],
             ['B'] = [0x7C, 0x66, 0x66, 0x7C, 0x66, 0x66, 0x7C, 0x00],

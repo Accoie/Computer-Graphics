@@ -1,15 +1,14 @@
-using Task3.Enums;
+using Task3.Enums; 
+using OpenTK.Mathematics;
 
 namespace Task3.Configs
 {
-    using Task3.Models;
-    using OpenTK.Mathematics;
 
     public static class GameConfig
     {
         public const int WindowWidth = 800;
         public const int WindowHeight = 600;
-        public const string WindowTitle = "Tetris Game - OpenTK 4.x";
+        public const string WindowTitle = "Tetris Game";
         
         public const int CellSize = 24;
         

@@ -14,6 +14,13 @@ namespace Task3.Input
         private readonly KeyState _rKey = new();
         private readonly KeyState _pKey = new();
 
+        public bool IsMoveLeftPressed() => _leftKey.IsPressed(InitialDelay, RepeatDelay);
+        public bool IsMoveRightPressed() => _rightKey.IsPressed(InitialDelay, RepeatDelay);
+        public bool IsRotatePressed() => _upKey.IsPressedOnce();
+        public bool IsFastDropHeld() => _downKey.IsHeld();
+        public bool IsRestartPressed() => _rKey.IsPressedOnce();
+        public bool IsPausePressed() => _pKey.IsPressedOnce();
+
         public void Update(KeyboardState keyboard)
         {
             _leftKey.Update(keyboard.IsKeyDown(Keys.Left));
@@ -23,14 +30,7 @@ namespace Task3.Input
             _rKey.Update(keyboard.IsKeyDown(Keys.R));
             _pKey.Update(keyboard.IsKeyDown(Keys.P));
         }
-
-        public bool IsMoveLeftPressed() => _leftKey.IsPressed(InitialDelay, RepeatDelay);
-        public bool IsMoveRightPressed() => _rightKey.IsPressed(InitialDelay, RepeatDelay);
-        public bool IsRotatePressed() => _upKey.IsPressedOnce();
-        public bool IsFastDropHeld() => _downKey.IsHeld();
-        public bool IsRestartPressed() => _rKey.IsPressedOnce();
-        public bool IsPausePressed() => _pKey.IsPressedOnce();
-
+        
         private class KeyState
         {
             private int _timer;

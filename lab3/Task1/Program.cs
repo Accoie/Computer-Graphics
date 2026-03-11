@@ -6,11 +6,11 @@ namespace Task1;
 
 public class Program
 {
-    static void Main( string[] args )
+    static void Main()
     {
-        var gameWindowSettings = GameWindowSettings.Default;
+        GameWindowSettings? gameWindowSettings = GameWindowSettings.Default;
 
-        var nativeWindowSettings = new NativeWindowSettings
+        NativeWindowSettings nativeWindowSettings = new NativeWindowSettings
         {
             ClientSize = new Vector2i( 1000, 800 ),
             Title = "Bezier Curve",
@@ -19,9 +19,7 @@ public class Program
             Flags = ContextFlags.Default
         };
 
-        using ( var gameWindow = new BezierGameWindow( gameWindowSettings, nativeWindowSettings ) )
-        {
-            gameWindow.Run();
-        }
+        using BezierGameWindow gameWindow = new( gameWindowSettings, nativeWindowSettings );
+        gameWindow.Run();
     }
 }

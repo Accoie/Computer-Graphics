@@ -2,11 +2,16 @@ using Task3.Enums;
 
 namespace Task3.Models
 {
-
-
     public class Field
     {
+        /// <summary>
+        /// Ширина поля (в клетках)
+        /// </summary>
         public const int Width = 10;
+        
+        /// <summary>
+        /// Высота поля (в клетках)
+        /// </summary>
         public const int Height = 20;
         
         private readonly ColorType[,] _cells = new ColorType[Width, Height];
@@ -34,6 +39,7 @@ namespace Task3.Models
             {
                 return true;
             }
+            
             if (y < 0)
             {
                 return false;

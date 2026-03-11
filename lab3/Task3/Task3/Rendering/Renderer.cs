@@ -30,7 +30,7 @@ namespace Task3.Rendering
             _fieldOffsetY = (height - Field.Height * CellSize) / 2;
         }
         
-        public void Initialize()
+        public static void Initialize()
         {
             GL.ClearColor(0.15f, 0.10f, 0.1f, 1.0f);
             GL.Enable(EnableCap.Blend);
@@ -39,12 +39,12 @@ namespace Task3.Rendering
         
         public void DrawField(Field field, Shape currentShape)
         {
-            int fieldWidth = Field.Width * CellSize;
-            int fieldHeight = Field.Height * CellSize;
+            const int fieldWidth = Field.Width * CellSize;
+            const int fieldHeight = Field.Height * CellSize;
             
             DrawFieldBackground(fieldWidth, fieldHeight);
             DrawPlacedCells(field);
-            DrawCurrentShape(currentShape);
+            DrawCurrentShape(currentShape, field);
             DrawFieldBorder(fieldWidth, fieldHeight);
             DrawGridLines(fieldWidth, fieldHeight);
         }
@@ -75,12 +75,13 @@ namespace Task3.Rendering
             }
         }
         
-        private void DrawCurrentShape(Shape currentShape)
+        private void DrawCurrentShape(Shape currentShape, Field field)
         {
             for (int i = 0; i < 4; i++)
             {
                 Block block = currentShape[i];
-                if (block.X is >= 0 and < Field.Width && block.Y < Field.Height)
+                bool canOccupyCell = block.X is >= 0 and < Field.Width && block.Y < Field.Height && field[block.X, block.Y] == ColorType.Empty;
+                if (canOccupyCell)
                 {
                     DrawCell(block.X, block.Y, currentShape.Color);
                 }
@@ -89,9 +90,10 @@ namespace Task3.Rendering
         
         private void DrawCell(int x, int y, ColorType colorType)
         {
+            const float cellMarginFromBorder = 0.8f;
             float drawX = _fieldOffsetX + x * CellSize;
             float drawY = _fieldOffsetY + (Field.Height - 1 - y) * CellSize;
-            DrawSquare(drawX, drawY, CellSize - 1, colorType);
+            DrawSquare(drawX, drawY, CellSize - cellMarginFromBorder, colorType);
         }
         
         private void DrawFieldBorder(int fieldWidth, int fieldHeight)
@@ -202,8 +204,8 @@ namespace Task3.Rendering
         
         private void DrawPreviewBlocks(Shape shape, float offsetX, float offsetY)
         {
-            int сellSize = 20;
-            
+            const int сellSize = 20;
+
             for (int i = 0; i < 4; i++)
             {
                 float x = offsetX + shape[i].X * сellSize;

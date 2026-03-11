@@ -22,7 +22,7 @@ namespace Task3
         private int _score;
         private string _scoreStr = "0";
 
-        private int _level = 10;
+        private int _level = 1;
         private int _linesCleared;
         private int _linesNeeded;
 
@@ -79,7 +79,7 @@ namespace Task3
         protected override void OnLoad()
         {
             base.OnLoad();
-            _renderer.Initialize();
+            Renderer.Initialize();
             GL.Viewport(0, 0, ClientSize.X, ClientSize.Y);
         }
 
@@ -115,10 +115,9 @@ namespace Task3
         {
             base.OnUpdateFrame(e);
 
-            KeyboardState? keyBoard = KeyboardState;
-            _inputHandler.Update(keyBoard);
+            _inputHandler.Update(KeyboardState);
 
-            HandleSystemInput(keyBoard);
+            HandleSystemInput(KeyboardState);
 
             if (_isGameOver || _isPaused)
             {
@@ -153,7 +152,7 @@ namespace Task3
             if (_inputHandler.IsFastDropHeld())
             {
                 _fastDropTimer += e.Time;
-                double dropInterval = 1.0 / GameConfig.FastDropSpeed;
+                const double dropInterval = 1.0 / GameConfig.FastDropSpeed;
 
                 while (_fastDropTimer >= dropInterval)
                 {
@@ -226,6 +225,11 @@ namespace Task3
 
             UpdateScoreString();
 
+            if (_isGameOver)
+            {
+                return;
+            }
+            
             _currentShape.ApplyNext(_nextShape);
             GenerateNextShape();
 
