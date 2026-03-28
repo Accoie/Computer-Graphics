@@ -117,7 +117,7 @@ namespace Task1
         }
         
         private void RotateCamera(float x, float y)
-        {
+        { // разобраться что-то такое modelview
             GL.MatrixMode(MatrixMode.Modelview);
 
             GL.GetFloat(GetPName.ModelviewMatrix, out Matrix4 modelView);

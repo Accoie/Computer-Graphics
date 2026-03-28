@@ -120,7 +120,7 @@ namespace Task1
             
             GL.CullFace(TriangleFace.Front);
             DrawSides();
-
+            
             GL.CullFace(TriangleFace.Back);
             DrawSides();
             
@@ -195,6 +195,7 @@ namespace Task1
                 {
                     GL.Vertex3(_vertices[vertexIndex]);
                 }
+                
                 i++;
             }
 
