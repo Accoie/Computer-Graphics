@@ -57,4 +57,13 @@ public static class GameConfig
         public const float NearPlane = 0.1f;
         public const float FarPlane = 1000f;
     }
+
+    public static class Fog
+    {
+        public const bool Enabled = true;
+        public const float Density = 0.15f;
+        public const float Start = 5f;
+        public const float End = 25f;
+        public static readonly float[] Color = [0.15f, 0.25f, 0.4f, 1.0f];
+    }
 }

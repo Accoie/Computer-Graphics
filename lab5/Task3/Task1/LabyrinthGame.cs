@@ -152,6 +152,21 @@ public class LabyrinthGame : GameWindow
         GL.ActiveTexture(TextureUnit.Texture0);
 
         GL.Disable(EnableCap.AutoNormal);
+
+        if (GameConfig.Fog.Enabled)
+        {
+            EnableFog();
+        }
+    }
+    
+    private static void EnableFog()
+    {
+        GL.Enable(EnableCap.Fog);
+        GL.Fog(FogParameter.FogMode, (int)FogMode.Exp2);
+        GL.Fog(FogParameter.FogDensity, GameConfig.Fog.Density);
+        GL.Fog(FogParameter.FogColor, GameConfig.Fog.Color);
+        GL.Fog(FogParameter.FogStart, GameConfig.Fog.Start);
+        GL.Fog(FogParameter.FogEnd, GameConfig.Fog.End);
     }
     
     private void LoadTextures()
