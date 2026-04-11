@@ -4,7 +4,7 @@ namespace Task1.Strategies;
 
 public class WallRenderStrategy : IRenderStrategy
 {
-    private const float RepetitionRatio = 0.1f;
+    private const float RepetitionRatio = 0.4f;
     private readonly int _shadowMapTextureId;
     private readonly float _wallHeight;
     private readonly int[] _wallTextures;

@@ -50,10 +50,10 @@ public class LabyrinthGame : GameWindow
 
         InitializeGraphics();
         ConfigureLighting();
+        ConfigureFog();
         
         CursorState = CursorState.Grabbed;
     }
-
 
     protected override void OnUnload()
     {
@@ -167,7 +167,7 @@ public class LabyrinthGame : GameWindow
 
         _skyboxTextureId = TextureService.LoadTexture("textures/skybox.jpg");
 
-        _shadowMapTextureId = TextureService.LoadShadowMap("textures/shadowmap.jpg");
+        _shadowMapTextureId = TextureService.LoadShadowMap("textures/newshadow.webp");
     }
 
     private static void ConfigureLighting()
@@ -178,6 +178,18 @@ public class LabyrinthGame : GameWindow
         GL.Light(LightName.Light0, LightParameter.ConstantAttenuation, GameConfig.Lighting.ConstantAttenuation);
         GL.Light(LightName.Light0, LightParameter.LinearAttenuation, GameConfig.Lighting.LinearAttenuation);
         GL.Light(LightName.Light0, LightParameter.QuadraticAttenuation, GameConfig.Lighting.QuadraticAttenuation);
+    }
+
+    private static void ConfigureFog()
+    {
+        GL.Enable(EnableCap.Fog);
+        
+        GL.Fog(FogParameter.FogMode, (int)FogMode.Exp2);
+        
+        float[] fogColor = { 0.15f, 0.25f, 0.4f, 1.0f };
+        GL.Fog(FogParameter.FogColor, fogColor);
+        
+        GL.Fog(FogParameter.FogDensity, 0.1f);
     }
 
     private static Player CreatePlayer()

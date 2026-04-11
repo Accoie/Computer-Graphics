@@ -11,9 +11,8 @@ public class TextureService
     {
         return LoadTextureInternal(
             filePath,
-            TextureMinFilter.LinearMipmapLinear,
-            TextureMagFilter.Linear,
-            true);
+            TextureMinFilter.Linear,
+            TextureMagFilter.Linear);
     }
 
     public static int LoadShadowMap(string filePath)
@@ -21,8 +20,7 @@ public class TextureService
         return LoadTextureInternal(
             filePath,
             TextureMinFilter.Linear,
-            TextureMagFilter.Linear,
-            false);
+            TextureMagFilter.Linear);
     }
 
     public static void DeleteTexture(int textureId)
@@ -36,8 +34,7 @@ public class TextureService
     private static int LoadTextureInternal(
         string filePath,
         TextureMinFilter minFilter,
-        TextureMagFilter magFilter,
-        bool generateMipmaps)
+        TextureMagFilter magFilter)
     {
         if (!File.Exists(filePath))
         {
@@ -65,11 +62,6 @@ public class TextureService
             pixelData);
 
         SetupTextureSampling(minFilter, magFilter);
-
-        if (generateMipmaps)
-        {
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-        }
 
         return textureId;
     }

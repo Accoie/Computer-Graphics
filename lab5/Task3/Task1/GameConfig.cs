@@ -9,7 +9,7 @@ public static class GameConfig
         public const float ConstantAttenuation = 1.0f;
         public const float LinearAttenuation = 0.05f;
         public const float QuadraticAttenuation = 0.012f;
-        public static readonly float[] LightAmbient = [0.08f, 0.08f, 0.08f, 1.0f];
+        public static readonly float[] LightAmbient = [0.02f, 0.02f, 0.02f, 1.0f];
         public static readonly float[] LightDiffuse = [0.8f, 0.8f, 0.8f, 1.0f];
         public static readonly float[] LightSpecular = [0.8f, 0.8f, 0.8f, 1.0f];
     }
