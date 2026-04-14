@@ -1,8 +1,9 @@
-﻿using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Task1.Shaders;
+using Task1.Chess;
 
 namespace Task1;
 
@@ -22,7 +23,7 @@ public class GameWindow3D : GameWindow
     private Vector3 _lightColor = new Vector3(1.0f, 1.0f, 1.0f);
     private float _ambientStrength = 0.3f;
     
-    private Picture.Picture _picture = new();
+    private ChessVisualization _chessVis;
 
     public GameWindow3D(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) 
         : base(gameWindowSettings, nativeWindowSettings)
@@ -46,11 +47,13 @@ public class GameWindow3D : GameWindow
         UpdateViewMatrix();
         CalculateProjectionMatrix();
         
-        _picture.LoadPicture();
+        _chessVis = new ChessVisualization();
+        _chessVis.Initialize();
     }
 
     protected override void OnUnload()
     {
+        _chessVis?.Dispose();
         _shader.Dispose();
         base.OnUnload();
     }
@@ -60,6 +63,13 @@ public class GameWindow3D : GameWindow
         base.OnResize(e);
         GL.Viewport(0, 0, Size.X, Size.Y);
         CalculateProjectionMatrix();
+    }
+
+    protected override void OnUpdateFrame(FrameEventArgs args)
+    {
+        base.OnUpdateFrame(args);
+        
+        _chessVis?.Update((float)args.Time);
     }
 
     protected override void OnRenderFrame(FrameEventArgs args)
@@ -76,7 +86,7 @@ public class GameWindow3D : GameWindow
         _shader.SetVector3("lightColor", _lightColor);
         _shader.SetFloat("ambientStrength", _ambientStrength);
         
-        _picture.Paint(_shader);
+        _chessVis?.Paint(_shader);
         
         SwapBuffers();
     }

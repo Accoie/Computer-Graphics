@@ -15,7 +15,7 @@ void main()
 {
     if (useTexture)
     {
-        FragColor = texture(mainTexture, TexCoord);
+        FragColor = texture(mainTexture, TexCoord) * vec4(diffuseColor, 1.0);
     }
     else
     {
