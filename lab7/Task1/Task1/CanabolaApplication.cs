@@ -37,7 +37,7 @@ namespace Task1
 
             _shader.Use();
 
-            float aspectRatio = (float)Size.X / (float)Size.Y;
+            float aspectRatio = Size.X / (float)Size.Y;
             float scale = 2.3f;
 
             Matrix4 projection = Matrix4.CreateOrthographicOffCenter(
