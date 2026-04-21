@@ -1,22 +1,7 @@
 using OpenTK.Mathematics;
+using Task1.Models.Enums;
 
-namespace Task1.Chess;
-
-public enum PieceType
-{
-    Pawn,
-    Rook,
-    Knight,
-    Bishop,
-    Queen,
-    King
-}
-
-public enum PieceColor
-{
-    White,
-    Black
-}
+namespace Task1.Models;
 
 public class ChessPiece
 {
@@ -52,14 +37,7 @@ public class ChessPiece
         return new Vector3(x, y, z);
     }
 
-    public static (int file, int rank) GetCoordinatesFromPosition(Vector3 pos)
-    {
-        int file = (int)Math.Round(pos.X / 0.8f + 3.5f);
-        int rank = (int)Math.Round(pos.Y / 0.8f + 3.5f);
-        return (file, rank);
-    }
-
-    public void MoveTo(int targetFile, int targetRank, float animationDuration = 0.5f)
+    public void MoveTo(int targetFile, int targetRank)
     {
         File = targetFile;
         Rank = targetRank;
@@ -68,10 +46,22 @@ public class ChessPiece
         AnimationProgress = 0f;
     }
 
+    public void ResetToInitialPosition(int file, int rank)
+    {
+        File = file;
+        Rank = rank;
+        Position = GetPositionFromCoordinates(file, rank);
+        TargetPosition = Position;
+        IsAnimating = false;
+        AnimationProgress = 0f;
+    }
+
     public void UpdateAnimation(float deltaTime, float animationDuration = 0.5f)
     {
         if (!IsAnimating)
+        {
             return;
+        }
 
         AnimationProgress += deltaTime / animationDuration;
 
@@ -79,19 +69,12 @@ public class ChessPiece
         {
             Position = TargetPosition;
             IsAnimating = false;
-            AnimationProgress = 1f;
+            AnimationProgress = 0f;
         }
         else
         {
             Position = Vector3.Lerp(Position, TargetPosition, AnimationProgress);
         }
-    }
-
-    public void MoveToPosition(Vector3 targetPos, float animationDuration = 0.5f)
-    {
-        TargetPosition = targetPos;
-        IsAnimating = true;
-        AnimationProgress = 0f;
     }
 
     public string GetModelPath()

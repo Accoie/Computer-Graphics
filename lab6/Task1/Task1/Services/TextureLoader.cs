@@ -3,7 +3,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-namespace Task1.TextureService;
+namespace Task1.Services;
 
 public static class TextureLoader
 {

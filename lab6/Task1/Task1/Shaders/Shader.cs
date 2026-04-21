@@ -5,8 +5,7 @@ namespace Task1.Shaders;
 
 public class Shader
 {
-    int _handle;
-    bool _disposedValue = false;
+    readonly int _handle;
 
     public Shader(
         string vertexPath = "../../../Shaders/shader.vert",
@@ -94,29 +93,5 @@ public class Shader
     public int GetUniformLocation(string name)
     {
         return GL.GetUniformLocation(_handle, name);
-    }
-
-    ~Shader()
-    {
-        if (!_disposedValue)
-        {
-            throw new ArgumentException("GPU Resource leak! Did you forget to call Dispose()?");
-        }
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposedValue)
-        {
-            GL.DeleteProgram(_handle);
-
-            _disposedValue = true;
-        }
-    }
-    
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }

@@ -1,30 +1,28 @@
 using Assimp;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
-using OpenTK.Windowing.Desktop;
+using Task1.Services;
 using Task1.Shaders;
-using Task1.TextureService;
 using PrimitiveType = OpenTK.Graphics.OpenGL4.PrimitiveType;
 
-namespace Task1.Picture;
+namespace Task1.Models;
 
 public class Shape
 {
-    Scene _scene;
-    Dictionary<Mesh, (int vbo, int ebo)> _meshBuffers = [];
-    Dictionary<Material, int> _textureIds = [];
-    Dictionary<Mesh, bool> _hasTexture = [];
+    private Scene _scene = null!;
+    private readonly Dictionary<Mesh, int> _meshVbos = [];
+    private readonly Dictionary<Material, int> _textureIds = [];
+    private readonly Dictionary<Mesh, int> _meshVertexCounts = [];
 
-    float _x;
-    float _y;
-    float _z;
-    float _scale;
+    private float _x;
+    private float _y;
+    private float _z;
+    private readonly float _scale;
 
-    bool _isInverse;
-    
+    private readonly bool _isInverse;
+
     private int _forcedTextureId = -1;
-    private string _modelPath;
+    private string _modelPath = null!;
 
     public float X
     {
@@ -75,7 +73,7 @@ public class Shape
         {
             foreach (Material material in _scene.Materials)
             {
-                LoadMaterialTexture(material, modelDirectory);
+                LoadMaterialTexture(material, modelDirectory!);
             }
         }
 
@@ -87,31 +85,22 @@ public class Shape
 
     public void Dispose()
     {
-        foreach (var buffer in _meshBuffers.Values)
+        foreach (int vbo in _meshVbos.Values)
         {
-            GL.DeleteBuffer(buffer.vbo);
-            GL.DeleteBuffer(buffer.ebo);
+            GL.DeleteBuffer(vbo);
         }
-        
-        foreach (var textureId in _textureIds.Values)
+
+        foreach (int textureId in _textureIds.Values)
         {
             TextureLoader.DeleteTexture(textureId);
         }
     }
-    
+
     public void SetTexture(int textureId)
     {
         _forcedTextureId = textureId;
-        
-        foreach (var mesh in _scene.Meshes)
-        {
-            Material material = _scene.Materials[mesh.MaterialIndex];
-            
-        }
-        
-        Console.WriteLine($"Forced texture {textureId} applied to shape");
     }
-    
+
     public void Paint(Shader shader)
     {
         Matrix4 model = Matrix4.CreateTranslation(_x, _y, _z);
@@ -119,20 +108,18 @@ public class Shape
 
         foreach (Mesh mesh in _scene.Meshes)
         {
-            (int vbo, int ebo) = _meshBuffers[mesh];
+            int vbo = _meshVbos[mesh];
+            int vertexCount = _meshVertexCounts[mesh];
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
-
             ConfigureVertexAttributes();
 
             Material material = _scene.Materials[mesh.MaterialIndex];
-            SetupTextureAndColor(shader, material, mesh);
+            SetupTextureAndColor(shader, material);
 
-            GL.DrawElements(PrimitiveType.Triangles, mesh.GetIndices().Length, DrawElementsType.UnsignedInt, IntPtr.Zero);
+            GL.DrawArrays(PrimitiveType.Triangles, 0, vertexCount);
         }
     }
-    
 
     private void ProcessMesh(Mesh mesh)
     {
@@ -149,13 +136,12 @@ public class Shape
             .ToArray() ?? Array.Empty<Vector2>();
 
         int[] indices = mesh.GetIndices();
+
         List<float> vertexData = BuildVertexData(vertices, normals, texCoords, indices);
 
-        (int vbo, int ebo) = CreateBuffers(vertexData, indices);
-        _meshBuffers[mesh] = (vbo, ebo);
-
-        Material mat = _scene.Materials[mesh.MaterialIndex];
-        _hasTexture[mesh] = _textureIds.ContainsKey(mat) && _textureIds[mat] != 0;
+        int vbo = CreateBuffer(vertexData);
+        _meshVbos[mesh] = vbo;
+        _meshVertexCounts[mesh] = vertexData.Count / 8;
     }
 
     private List<float> BuildVertexData(Vector3[] vertices, Vector3[] normals, Vector2[] texCoords, int[] indices)
@@ -189,19 +175,15 @@ public class Shape
         return vertexData;
     }
 
-    private (int vbo, int ebo) CreateBuffers(List<float> vertexData, int[] indices)
+    private int CreateBuffer(List<float> vertexData)
     {
         int vbo = GL.GenBuffer();
         GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
-        GL.BufferData(BufferTarget.ArrayBuffer, vertexData.Count * sizeof(float), vertexData.ToArray(), BufferUsageHint.StaticDraw);
-
-        int ebo = GL.GenBuffer();
-        GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
-        GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(int), indices, BufferUsageHint.StaticDraw);
-
-        return (vbo, ebo);
+        GL.BufferData(BufferTarget.ArrayBuffer, vertexData.Count * sizeof(float),
+            vertexData.ToArray(), BufferUsageHint.DynamicDraw);
+        return vbo;
     }
-    
+
     private void ConfigureVertexAttributes()
     {
         GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 8 * sizeof(float), 0);
@@ -213,7 +195,7 @@ public class Shape
         GL.VertexAttribPointer(2, 2, VertexAttribPointerType.Float, false, 8 * sizeof(float), 6 * sizeof(float));
         GL.EnableVertexAttribArray(2);
     }
-    
+
     private void SetColorToShader(Shader shader, Color4D color, string name)
     {
         float r = _isInverse ? 1 - color.R : color.R;
@@ -223,9 +205,9 @@ public class Shape
         shader.SetVector3(name, new Vector3(r, g, b));
     }
 
-    private void SetupTextureAndColor(Shader shader, Material material, Mesh mesh)
+    private void SetupTextureAndColor(Shader shader, Material material)
     {
-        bool applyForced = _forcedTextureId != -1 && (_modelPath.Contains("Board.3ds") ? mesh.Name.Contains("Frame") : true);
+        bool applyForced = _forcedTextureId != -1 && !_modelPath.Contains("Board.3ds");
 
         if (applyForced)
         {
@@ -255,33 +237,22 @@ public class Shape
         {
             TextureSlot textureSlot = material.TextureDiffuse;
             string texturePath = textureSlot.FilePath;
-            
+
             string fullPath = Path.Combine(modelDirectory, texturePath);
             if (!File.Exists(fullPath))
             {
                 fullPath = Path.Combine(modelDirectory, Path.GetFileName(texturePath));
             }
+
             if (!File.Exists(fullPath))
             {
                 fullPath = texturePath;
             }
-            
+
             if (File.Exists(fullPath))
             {
-                try
-                {
-                    int textureId = TextureLoader.LoadTexture(fullPath);
-                    _textureIds[material] = textureId;
-                    Console.WriteLine($"Texture loaded: {fullPath}");
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Failed to load texture: {ex.Message}");
-                }
-            }
-            else
-            {
-                Console.WriteLine($"Texture file not found: {fullPath}");
+                int textureId = TextureLoader.LoadTexture(fullPath);
+                _textureIds[material] = textureId;
             }
         }
     }

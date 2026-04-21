@@ -8,8 +8,8 @@ class Program
 {
     static void Main(string[] args)
     {
-        var gameWindowSettings = GameWindowSettings.Default;
-        var nativeWindowSettings = new NativeWindowSettings
+        GameWindowSettings? gameWindowSettings = GameWindowSettings.Default;
+        NativeWindowSettings nativeWindowSettings = new NativeWindowSettings
         {
             ClientSize = new Vector2i(1500, 800),
             Title = "OpenTK 3D Application",
@@ -17,8 +17,7 @@ class Program
             Profile = ContextProfile.Core,
             Flags = ContextFlags.ForwardCompatible
         };
-        
-        using var game = new GameWindow3D(gameWindowSettings, nativeWindowSettings);
-        game.Run();
+        using ChessGame chessGame = new ChessGame(gameWindowSettings, nativeWindowSettings);
+        chessGame.Run();
     }
 }
