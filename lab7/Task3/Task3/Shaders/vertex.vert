@@ -14,7 +14,7 @@ vec3 calcNormalSaddle(vec2 p)     { return normalize(vec3(-2.0 * p.x,  2.0 * p.y
 void main()
 {
     vec3 posParaboloid = vec3(position.x, position.y, position.x * position.x + position.y * position.y);
-    vec3 posSaddle     = vec3(position.x, position.y, position.x * position.x - position.y * position.y);
+    vec3 posSaddle = vec3(position.x, position.y, position.x * position.x - position.y * position.y);
     vec3 morphedPos = mix(posParaboloid, posSaddle, progress);
     
     vec3 n1 = calcNormalParaboloid(position.xy);

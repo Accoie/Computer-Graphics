@@ -16,12 +16,17 @@ public class Hammer : Figure
 
     private void CreateHammerHead(float r, float g, float b)
     {
+        float x1 = -0.812f, y1 = 0.297f;
+        float x2 = -0.790f, y2 = 0.265f;
+        float x3 = -0.750f, y3 = 0.295f;
+        float x4 = -0.710f, y4 = 0.337f;
+        
         float[] points =
         [
-            -0.812f, 0.297f, 0f, r, g, b,
-            -0.790f, 0.265f, 0f, r, g, b,
-            -0.750f, 0.295f, 0f, r, g, b,
-            -0.710f, 0.337f, 0f, r, g, b,
+            x1, y1, 0f, r, g, b,
+            x2, y2, 0f, r, g, b,
+            x3, y3, 0f, r, g, b,
+            x4, y4, 0f, r, g, b,
         ];
 
         CreateAndSetUpBuffer(points, PrimitiveType.TriangleFan);
@@ -29,12 +34,17 @@ public class Hammer : Figure
 
     private void CreateHammerHandle(float r, float g, float b)
     {
+        float x1 = -0.580f, y1 = 0.150f;
+        float x2 = -0.595f, y2 = 0.135f;
+        float x3 = -0.760f, y3 = 0.295f;
+        float x4 = -0.750f, y4 = 0.307f;
+        
         float[] points =
         [
-            -0.580f, 0.150f, 0f, r, g, b,
-            -0.595f, 0.135f, 0f, r, g, b,
-            -0.760f, 0.295f, 0f, r, g, b,
-            -0.750f, 0.307f, 0f, r, g, b,
+            x1, y1, 0f, r, g, b,
+            x2, y2, 0f, r, g, b,
+            x3, y3, 0f, r, g, b,
+            x4, y4, 0f, r, g, b,
         ];
 
         CreateAndSetUpBuffer(points, PrimitiveType.TriangleFan);

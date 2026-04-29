@@ -9,12 +9,12 @@ namespace Task3
     public class MorphingApp(GameWindowSettings gwSettings, NativeWindowSettings nwSettings)
         : GameWindow(gwSettings, nwSettings)
     {
+        private const float Speed = 0.002f;
         private Shader _shader = null!;
         private Shape _shape = null!;
         
         private float _progress;
         private float _direction = 1.0f;
-        private const float Speed = 0.002f;
         
         private float _rotationX;
         private float _rotationY;
@@ -39,8 +39,8 @@ namespace Task3
             
             string shaderDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Shaders");
             _shader = new Shader(
-                Path.Combine(shaderDir, "fragment.frag"),
-                Path.Combine(shaderDir, "vertex.vert")
+                Path.Combine(shaderDir, "vertex.vert"),
+                Path.Combine(shaderDir, "fragment.frag")
             );
             
             _shape = new Shape(_shader);
@@ -70,10 +70,12 @@ namespace Task3
             switch (_progress)
             {
                 case >= 1.0f:
-                    _progress = 1.0f; _direction = -1.0f;
+                    _progress = 1.0f;
+                    _direction = -1.0f;
                     break;
                 case <= 0.0f:
-                    _progress = 0.0f; _direction = 1.0f;
+                    _progress = 0.0f;
+                    _direction = 1.0f;
                     break;
             }
             
@@ -85,6 +87,7 @@ namespace Task3
                 _rotationY += dx * 0.5f;
                 _rotationX += dy * 0.5f;
             }
+            
             _lastMousePos = MousePosition;
         }
 

@@ -78,13 +78,8 @@ namespace Task3
             int shader = GL.CreateShader(type);
             GL.ShaderSource(shader, source);
             GL.CompileShader(shader);
-            GL.GetShader(shader, ShaderParameter.CompileStatus, out int compiled);
-            if (compiled == 0)
-            {
-                Console.WriteLine($"ERROR: {type} compile: {GL.GetShaderInfoLog(shader)}");
-                GL.DeleteShader(shader);
-                return 0;
-            }
+            GL.GetShader(shader, ShaderParameter.CompileStatus, out int _);
+            
             return shader;
         }
 

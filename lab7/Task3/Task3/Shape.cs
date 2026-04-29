@@ -1,4 +1,5 @@
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace Task3
 {
@@ -8,66 +9,14 @@ namespace Task3
         private int _vbo;
         private int _vertexCount;
 
-        public int VertexCount => _vertexCount;
-
         public Shape(Shader shader, int rows = 100, int cols = 100)
         {
-            GenerateSurfaceMesh(shader, rows, cols);
+            float[] vertices = GeneratePlaneGrid(rows, cols);
+            _vertexCount = vertices.Length / 3;
+            
+            CreateAndSetupBuffers(shader, vertices);
         }
-
-        private void GenerateSurfaceMesh(Shader shader, int rows, int cols)
-        {
-            List<float> vertices = new List<float>();
-
-            for (int i = 0; i < rows - 1; i++)
-            {
-                for (int j = 0; j < cols - 1; j++)
-                {
-                    float x0 = -1.0f + 2.0f * i / (rows - 1);
-                    float y0 = -1.0f + 2.0f * j / (cols - 1);
-                    float x1 = -1.0f + 2.0f * (i + 1) / (rows - 1);
-                    float y1 = y0;
-                    float x2 = x0;
-                    float y2 = -1.0f + 2.0f * (j + 1) / (cols - 1);
-                    float x3 = x1;
-                    float y3 = y2;
-
-                    AddTriangle(vertices, x0, y0, x1, y1, x2, y2);
-                    AddTriangle(vertices, x1, y1, x3, y3, x2, y2);
-                }
-            }
-
-            _vertexCount = vertices.Count / 3;
-
-            _vao = GL.GenVertexArray();
-            GL.BindVertexArray(_vao);
-
-            _vbo = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
-            GL.BufferData(BufferTarget.ArrayBuffer, vertices.Count * sizeof(float), vertices.ToArray(), BufferUsageHint.StaticDraw);
-
-            int posLoc = shader.GetAttribLocation("position");
-            if (posLoc == -1)
-            {
-                Console.WriteLine("WARNING: 'position' attribute not found!");
-            }
-            else
-            {
-                GL.EnableVertexAttribArray(posLoc);
-                GL.VertexAttribPointer(posLoc, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-            }
-
-            GL.BindVertexArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-        }
-
-        private void AddTriangle(List<float> v, float x0, float y0, float x1, float y1, float x2, float y2)
-        {
-            v.Add(x0); v.Add(y0); v.Add(0f);
-            v.Add(x1); v.Add(y1); v.Add(0f);
-            v.Add(x2); v.Add(y2); v.Add(0f);
-        }
-
+        
         public void Draw()
         {
             GL.BindVertexArray(_vao);
@@ -79,6 +28,117 @@ namespace Task3
         {
             GL.DeleteBuffer(_vbo);
             GL.DeleteVertexArray(_vao);
+        }
+        
+        private float[] GeneratePlaneGrid(int rows, int cols)
+        {
+            List<float> vertices = new List<float>();
+            
+            for (int row = 0; row < rows - 1; row++)
+            {
+                for (int col = 0; col < cols - 1; col++)
+                {
+                    Cell cell = GenerateCellVertices(row, col, rows, cols);
+                    AddTrianglesFromCell(vertices, cell);
+                }
+            }
+            
+            return vertices.ToArray();
+        }
+
+        private Cell GenerateCellVertices(int row, int col, int rows, int cols)
+        {
+            float x0 = NormalizeCoordinate(row, rows);
+            float y0 = NormalizeCoordinate(col, cols);
+            float x1 = NormalizeCoordinate(row + 1, rows);
+            float y1 = y0;
+            float x2 = x0;
+            float y2 = NormalizeCoordinate(col + 1, cols);
+            float x3 = x1;
+            float y3 = y2;
+
+            return new Cell(
+                new Vector2(x0, y0), 
+                new Vector2(x1, y1),
+                new Vector2(x2, y2), 
+                new Vector2(x3, y3) 
+            );
+        }
+
+        private float NormalizeCoordinate(int index, int maxIndex)
+        {
+            return -1.0f + 2.0f * index / (maxIndex - 1);
+        }
+        
+        private void AddTrianglesFromCell(List<float> vertices, Cell cell)
+        {
+            AddTriangle(vertices, 
+                cell.TopLeft, 
+                cell.TopRight, 
+                cell.BottomLeft);
+            
+            AddTriangle(vertices, 
+                cell.TopRight, 
+                cell.BottomRight, 
+                cell.BottomLeft);
+        }
+        
+        private void AddTriangle(List<float> vertices, Vector2 v1, Vector2 v2, Vector2 v3)
+        {
+            vertices.Add(v1.X);
+            vertices.Add(v1.Y);
+            vertices.Add(0f);
+            vertices.Add(v2.X);
+            vertices.Add(v2.Y);
+            vertices.Add(0f);
+            vertices.Add(v3.X); 
+            vertices.Add(v3.Y);
+            vertices.Add(0f);
+        }
+        
+        private void CreateAndSetupBuffers(Shader shader, float[] vertices)
+        {
+            _vao = GL.GenVertexArray();
+            GL.BindVertexArray(_vao);
+
+            _vbo = GL.GenBuffer();
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vbo);
+            GL.BufferData(BufferTarget.ArrayBuffer, 
+                vertices.Length * sizeof(float), 
+                vertices, 
+                BufferUsageHint.StaticDraw);
+
+            SetupVertexAttributes(shader);
+            
+            GL.BindVertexArray(0);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
+
+        private void SetupVertexAttributes(Shader shader)
+        {
+            int posLoc = shader.GetAttribLocation("position");
+            
+            GL.EnableVertexAttribArray(posLoc);
+            
+            int stride = 3 * sizeof(float);
+            int offset = 0;
+            GL.VertexAttribPointer(posLoc, 3, VertexAttribPointerType.Float, false, stride, offset);
+        }
+        
+        private struct Cell
+        {
+            public Vector2 TopLeft;
+            public Vector2 TopRight;
+            public Vector2 BottomLeft;
+            public Vector2 BottomRight;
+
+            public Cell(Vector2 tl, Vector2 tr, Vector2 bl, Vector2 br)
+            {
+                TopLeft = tl;
+                TopRight = tr;
+                BottomLeft = bl;
+                BottomRight = br;
+            }
         }
     }
 }

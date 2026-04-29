@@ -22,6 +22,8 @@ public class Sickle : Figure
         double startAngle = 225;
         double endAngle = 450;
         double angleWithMaxWidth = 270;
+        
+        float x1, y1, x2, y2;
         List<float> points = [];
 
         for (double angle = startAngle; angle <= endAngle; angle++)
@@ -29,27 +31,31 @@ public class Sickle : Figure
             float offset = (float)(1 - Math.Abs(angleWithMaxWidth - angle) / 180) * 0.01f;
             float angleRad = (float)(Math.Round(angle) * Math.PI / 180);
 
-            float x1 = cx + (radius + offset) * (float)Math.Cos(angleRad);
-            float y1 = cy + (radius + offset) * (float)Math.Sin(angleRad);
-
+            x1 = cx + (radius + offset) * (float)Math.Cos(angleRad);
+            y1 = cy + (radius + offset) * (float)Math.Sin(angleRad);
             points.AddRange([x1, y1, 0f, r, g, b]);
 
-            float x2 = cx + (radius - offset) * (float)Math.Cos(angleRad);
-            float y2 = cy + (radius - offset) * (float)Math.Sin(angleRad);
-
+            x2 = cx + (radius - offset) * (float)Math.Cos(angleRad);
+            y2 = cy + (radius - offset) * (float)Math.Sin(angleRad);
             points.AddRange([x2, y2, 0f, r, g, b]);
         }
 
         CreateAndSetUpBuffer(points.ToArray(), PrimitiveType.TriangleStrip);
     }
+
     private void CreateSickleHandle(float r, float g, float b)
     {
+        float x1 = -0.775f, y1 = 0.175f;
+        float x2 = -0.765f, y2 = 0.165f;
+        float x3 = -0.807f, y3 = 0.115f;
+        float x4 = -0.825f, y4 = 0.13f;
+        
         float[] points =
         [
-            -0.775f, 0.175f, 0f, r, g, b,
-            -0.765f, 0.165f, 0f, r, g, b,
-            -0.807f, 0.115f, 0f, r, g, b,
-            -0.825f, 0.13f, 0f, r, g, b,
+            x1, y1, 0f, r, g, b,
+            x2, y2, 0f, r, g, b,
+            x3, y3, 0f, r, g, b,
+            x4, y4, 0f, r, g, b,
         ];
 
         CreateAndSetUpBuffer(points, PrimitiveType.TriangleFan);

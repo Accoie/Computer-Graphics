@@ -10,6 +10,9 @@ namespace Task1
     {
         private Shader _shader;
         private Canabola _canabola;
+        const float Step = (float)(Math.PI / 1000);
+        const float StartAngle = 0;
+        const float EndAngle = (float)(2 * Math.PI);
 
         public CanabolaApplication(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings)
             : base(gameWindowSettings, nativeWindowSettings)
@@ -24,8 +27,8 @@ namespace Task1
             string fragmentSource = File.ReadAllText("../../../Shaders/canabola.frag");
             _shader = new Shader(vertexSource, fragmentSource);
 
-            float step = (float)(Math.PI / 1000);
-            _canabola = new Canabola(0, (float)(2 * Math.PI), step);
+
+            _canabola = new Canabola(StartAngle, EndAngle, Step);
 
             GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
         }

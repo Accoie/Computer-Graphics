@@ -8,7 +8,7 @@ namespace Task3
         {
             NativeWindowSettings? nativeSettings = NativeWindowSettings.Default;
             nativeSettings.Title = "Morphing";
-            nativeSettings.ClientSize = new OpenTK.Mathematics.Vector2i(800, 600);
+            nativeSettings.ClientSize = new OpenTK.Mathematics.Vector2i(1400, 1200);
             
             using (MorphingApp game = new MorphingApp(GameWindowSettings.Default, nativeSettings))
             {
