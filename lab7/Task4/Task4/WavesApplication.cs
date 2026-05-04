@@ -21,7 +21,6 @@ public class WavesApplication : GameWindow
     private Matrix4 _view = Matrix4.Identity;
     private Matrix4 _projection = Matrix4.Identity;
 
-
     private int _canvasVao;
     private int _canvasVertexCount;
 
@@ -107,11 +106,12 @@ public class WavesApplication : GameWindow
         Vector2 mousePos = new Vector2(MouseState.X, MouseState.Y);
 
         float uvX = mousePos.X / Size.X;
-        float uvY = 1.0f - mousePos.Y / Size.Y;
+        float uvY = 1.0f - mousePos.Y / Size.Y - 0.05f;
 
         _clickPosition = new Vector2(uvX, uvY);
         _time = 0f;
     }
+    
     private void CreateCanvas()
     {
         float[] points =

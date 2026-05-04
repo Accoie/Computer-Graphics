@@ -8,8 +8,8 @@ public sealed class Shader
     private readonly int _handle;
 
     public Shader(
-        string vertexPath = "../../../Shader/shader.vert",
-        string fragmentPath = "../../../Shader/shader.frag"
+        string vertexPath = "../../../Shaders/shader.vert",
+        string fragmentPath = "../../../Shaders/shader.frag"
         )
     {
         string vertexShaderSource = File.ReadAllText(vertexPath);
