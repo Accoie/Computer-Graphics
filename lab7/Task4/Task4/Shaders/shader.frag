@@ -9,7 +9,7 @@ uniform float Time;
 uniform vec2 ClickPos;
 
 const float WAVE_FREQUENCY = 20.0;
-const float WAVE_SPEED = 100.0;
+const float WAVE_SPEED = 20.0;
 const float DISTANCE_DECAY = 5.0;
 const float TIME_DECAY = 2.0;
 const float WAVE_AMPLITUDE = 0.1;

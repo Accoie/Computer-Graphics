@@ -10,8 +10,8 @@ namespace Task4;
 
 public class WavesApplication : GameWindow
 {
-    private const string FromImg = "Images/from2.jpg";
-    private const string ToImg = "Images/to2.jpg";
+    private const string FromImg = "Images/from.jpg";
+    private const string ToImg = "Images/to.jpg";
     private const float WaveSpeed = 0.5f;
     
     private readonly Shader _shader;
