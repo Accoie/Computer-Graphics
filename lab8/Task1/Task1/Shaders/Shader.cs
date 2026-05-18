@@ -61,19 +61,28 @@ public class Shader
     public void SetMatrix4(string name, Matrix4 matrix)
     {
         int loc = GetUniformLocation(name);
-        if (loc != -1) GL.UniformMatrix4(loc, false, ref matrix);
+        if (loc != -1)
+        {
+            GL.UniformMatrix4(loc, false, ref matrix);
+        }
     }
 
     public void SetVector3(string name, Vector3 vector)
     {
         int loc = GetUniformLocation(name);
-        if (loc != -1) GL.Uniform3(loc, vector);
+        if (loc != -1)
+        {
+            GL.Uniform3(loc, vector);
+        }
     }
 
     public void SetFloat(string name, float value)
     {
         int loc = GetUniformLocation(name);
-        if (loc != -1) GL.Uniform1(loc, value);
+        if (loc != -1)
+        {
+            GL.Uniform1(loc, value);
+        }
     }
     
     private void CheckShader(int shader, string type)

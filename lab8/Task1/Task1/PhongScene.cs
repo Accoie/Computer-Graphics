@@ -8,7 +8,7 @@ using Task1.Shaders;
 
 namespace Task1;
 
-public class Game() : GameWindow(GameWindowSettings.Default, new NativeWindowSettings
+public class PhongScene() : GameWindow(GameWindowSettings.Default, new NativeWindowSettings
 {
     ClientSize = new Vector2i(800, 600),
     Title = "Phong",
@@ -35,9 +35,6 @@ public class Game() : GameWindow(GameWindowSettings.Default, new NativeWindowSet
     {
         base.OnLoad();
 
-        Console.WriteLine($"OpenGL Version: {GL.GetString(StringName.Version)}");
-        Console.WriteLine($"Shader Version: {GL.GetString(StringName.ShadingLanguageVersion)}");
-
         GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         GL.Enable(EnableCap.DepthTest);
         GL.Disable(EnableCap.CullFace);
@@ -45,7 +42,6 @@ public class Game() : GameWindow(GameWindowSettings.Default, new NativeWindowSet
         try
         {
             _shader = new Shader();
-            Console.WriteLine("Shaders compiled and linked successfully!");
         }
         catch (Exception ex)
         {
@@ -122,12 +118,29 @@ public class Game() : GameWindow(GameWindowSettings.Default, new NativeWindowSet
         MouseState? mouse = MouseState;
 
         if (input.IsKeyDown(Keys.Escape))
+        {
             Close();
+        }
+        
+        if (input.IsKeyDown(Keys.Up))
+        {
+            _light.Position += new Vector3(0, 0.1f, 0);
+        }
 
-        if (input.IsKeyDown(Keys.Up))    _light.Position += new Vector3(0, 0.1f, 0);
-        if (input.IsKeyDown(Keys.Down))  _light.Position -= new Vector3(0, 0.1f, 0);
-        if (input.IsKeyDown(Keys.Left))  _light.Position -= new Vector3(0.1f, 0, 0);
-        if (input.IsKeyDown(Keys.Right)) _light.Position += new Vector3(0.1f, 0, 0);
+        if (input.IsKeyDown(Keys.Down))
+        {
+            _light.Position -= new Vector3(0, 0.1f, 0);
+        }
+
+        if (input.IsKeyDown(Keys.Left))
+        {
+            _light.Position -= new Vector3(0.1f, 0, 0);
+        }
+
+        if (input.IsKeyDown(Keys.Right))
+        {
+            _light.Position += new Vector3(0.1f, 0, 0);
+        }
 
         if (mouse.IsButtonDown(MouseButton.Left))
         {
@@ -165,8 +178,19 @@ public class Game() : GameWindow(GameWindowSettings.Default, new NativeWindowSet
     protected override void OnUnload()
     {
         base.OnUnload();
-        if (_vbo != 0) GL.DeleteBuffer(_vbo);
-        if (_ebo != 0) GL.DeleteBuffer(_ebo);
-        if (_vao != 0) GL.DeleteVertexArray(_vao);
+        if (_vbo != 0)
+        {
+            GL.DeleteBuffer(_vbo);
+        }
+
+        if (_ebo != 0)
+        {
+            GL.DeleteBuffer(_ebo);
+        }
+
+        if (_vao != 0)
+        {
+            GL.DeleteVertexArray(_vao);
+        }
     }
 }

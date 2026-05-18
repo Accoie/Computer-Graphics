@@ -6,8 +6,8 @@ public static class Program
     {
         try
         {
-            using Game game = new Game();
-            game.Run();
+            using PhongScene phongScene = new PhongScene();
+            phongScene.Run();
         }
         catch (Exception ex)
         {
