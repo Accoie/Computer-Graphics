@@ -22,13 +22,14 @@ bool IsPointInTorus(vec3 point, vec3 position, float R, float r)
 {
     vec3 p = point - position;
 
-    float sumSquared = dot(p, p);
-    float firstPart = sumSquared + R * R - r * r;
-    float secondPart = 4.0 * R * R * (p.x * p.x + p.z * p.z);
+    float firstTerm = p.x * p.x + p.y * p.y + p.z * p.z + R * R - r * r;
+    float firstTermSquared = firstTerm * firstTerm;
+    
+    float secondTerm = 4.0 * R * R * (p.x * p.x + p.z * p.z);
 
-    float val = firstPart * firstPart - secondPart;
+    float torusEquation = firstTermSquared - secondTerm;
 
-    return val <= 0.001;
+    return torusEquation <= 0.001;
 }
 
 bool IsPointInPyramid(vec3 point)
